@@ -25,6 +25,7 @@
     <PackageReference Include="WolverineFx.FluentValidation" Version="5.9.2" />
     <PackageReference Include="WolverineFx.Http" Version="5.9.2" />
     <PackageReference Include="WolverineFx.Http.FluentValidation" Version="5.9.2" />
+    <PackageReference Include="WolverineFx.SqlServer" Version="5.9.2" />
   </ItemGroup>
 
   <ItemGroup>

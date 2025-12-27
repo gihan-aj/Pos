@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pos.Web.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCategory : Migration
+    public partial class CreateCategoryTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,6 +23,8 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     DisplayOrder = table.Column<int>(type: "int", nullable: false),
                     IconUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Color = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: true),
+                    Level = table.Column<int>(type: "int", nullable: false),
+                    Path = table.Column<string>(type: "varchar(4000)", unicode: false, maxLength: 4000, nullable: false),
                     CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -40,9 +42,20 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Categories_Name",
+                table: "Categories",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Categories_ParentCategoryId",
                 table: "Categories",
                 column: "ParentCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_Path",
+                table: "Categories",
+                column: "Path");
         }
 
         /// <inheritdoc />

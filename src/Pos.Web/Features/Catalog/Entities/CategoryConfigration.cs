@@ -13,6 +13,17 @@ namespace Pos.Web.Features.Catalog.Entities
                 .HasMaxLength(100)
                 .IsRequired();
 
+            builder.HasIndex(c => c.Name)
+                .IsUnique();
+
+            builder.Property(c => c.Path)
+                .HasMaxLength(4000)
+                .IsUnicode(false)
+                .IsRequired();
+
+            // Find all decendents
+            builder.HasIndex(c => c.Path);
+
             builder.Property(c => c.Description)
                 .HasMaxLength(500);
 

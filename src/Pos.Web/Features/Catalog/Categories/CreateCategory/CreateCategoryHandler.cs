@@ -15,21 +15,31 @@ namespace Pos.Web.Features.Catalog.Categories.CreateCategory
             _dbContext = dbContext;
         }
 
-        public async Task<Result<Guid>> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
+        public async Task<Result<Category>> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
         {
+            bool nameExists = await _dbContext.Categories
+                .AnyAsync(c => c.Name == command.Name, cancellationToken);
+            if (nameExists)
+            {
+                return Result.Failure<Category>(Error.Conflict("Name.Duplicate", $"The category '{command.Name}' already exists."));
+            }
+
+            Category? parentCategory = null;
             if (command.ParentCategoryId.HasValue)
             {
-                var parentExists = await _dbContext.Categories
-                    .AnyAsync(c => c.Id == command.ParentCategoryId.Value, cancellationToken);
+                parentCategory = await _dbContext.Categories
+                    .FirstOrDefaultAsync(c => c.Id == command.ParentCategoryId.Value, cancellationToken);
 
-                if (!parentExists)
-                    return Result<Guid>.Failure(Error.NotFound("Category.ParentNotFound", "Parent category not found."));
+                if(parentCategory is null)
+                {
+                    return Result.Failure<Category>(Error.NotFound("Parent.NotFound", "Parent category not found."));
+                }
             }
 
             var categoryResult = Category.Create(
                 command.Name,
                 command.Description,
-                command.ParentCategoryId,
+                parentCategory,
                 command.DisplayOrder,
                 command.IconUrl,
                 command.Color
@@ -37,7 +47,7 @@ namespace Pos.Web.Features.Catalog.Categories.CreateCategory
 
             if (categoryResult.IsFailure)
             {
-                return Result.Failure<Guid>(categoryResult.Error);
+                return categoryResult;
             }
 
             var category = categoryResult.Value;
@@ -53,7 +63,7 @@ namespace Pos.Web.Features.Catalog.Categories.CreateCategory
             //   4. Commit Transaction
             //   5. (Bonus) Dispatch any Domain Events raised by the entity
 
-            return Result.Success(category.Id);
+            return Result.Success(category);
         }
     }
 }

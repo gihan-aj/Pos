@@ -52,6 +52,9 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -66,9 +69,20 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("ParentCategoryId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(4000)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.HasIndex("ParentCategoryId");
+
+                    b.HasIndex("Path");
 
                     b.ToTable("Categories");
                 });

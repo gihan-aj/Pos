@@ -12,8 +12,8 @@ using Pos.Web.Infrastructure.Persistence;
 namespace Pos.Web.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251227064031_AddCategory")]
-    partial class AddCategory
+    [Migration("20251227212550_CreateCategoryTable")]
+    partial class CreateCategoryTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,9 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -69,9 +72,20 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("ParentCategoryId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(4000)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.HasIndex("ParentCategoryId");
+
+                    b.HasIndex("Path");
 
                     b.ToTable("Categories");
                 });

@@ -1,4 +1,5 @@
 using FluentValidation;
+using JasperFx.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pos.Web.Infrastructure;
@@ -8,14 +9,28 @@ using Wolverine.EntityFrameworkCore;
 using Wolverine.FluentValidation;
 using Wolverine.Http;
 using Wolverine.Http.FluentValidation;
+using Wolverine.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Setup Wolverine
+// 1. Setup Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddSingleton<AuditingInterceptor>();
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+{
+    options.UseSqlServer(connectionString);
+    options.AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
+}, optionsLifetime: ServiceLifetime.Singleton);
+
+// 2. Setup Wolverine
 builder.Host.UseWolverine(opts =>
 {
+    opts.PersistMessagesWithSqlServer(connectionString);
+
     // Use the outbox pattern with EF Core for robust messaging
     opts.UseEntityFrameworkCoreTransactions();
+    opts.Policies.AutoApplyTransactions();
 
     opts.UseFluentValidation();
 
@@ -23,14 +38,6 @@ builder.Host.UseWolverine(opts =>
     opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
 });
 builder.Services.AddWolverineHttp();
-
-// 2. Setup Database
-builder.Services.AddSingleton<AuditingInterceptor>();
-builder.Services.AddDbContext<AppDbContext>((sp,options) =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-    options.AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
-});
 
 // 3. Setup Validation
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
