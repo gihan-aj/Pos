@@ -1,0 +1,81 @@
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Pos.Web.Infrastructure;
+using Pos.Web.Infrastructure.Persistence;
+using Wolverine;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.FluentValidation;
+using Wolverine.Http;
+using Wolverine.Http.FluentValidation;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. Setup Wolverine
+builder.Host.UseWolverine(opts =>
+{
+    // Use the outbox pattern with EF Core for robust messaging
+    opts.UseEntityFrameworkCoreTransactions();
+
+    opts.UseFluentValidation();
+
+    // Auto-discover handlers in the assembly
+    opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
+});
+builder.Services.AddWolverineHttp();
+
+// 2. Setup Database
+builder.Services.AddSingleton<AuditingInterceptor>();
+builder.Services.AddDbContext<AppDbContext>((sp,options) =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
+});
+
+// 3. Setup Validation
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
+// 4. Setup Error Handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// 5. Auth (Connect to your OpenIddict provider)
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "[http://localhost:8080](http://localhost:8080)";
+        options.Audience = "pos-api";
+
+        // For development, allow http if needed (though you are using https)
+        options.RequireHttpsMetadata = false;
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            // OpenIddict sets the "aud" (audience) claim to the resource server IDs.
+            // Since we haven't registered resources yet, we disable this check for now.
+            ValidateAudience = true,
+            ValidAudience = "pos-api",
+
+            // OpenIddict strictly sets the token type to "at+jwt".
+            // We must tell the validator to accept this specific type.
+            ValidTypes = new[] { "at+jwt" }
+        };
+    });
+builder.Services.AddAuthorization();
+
+var app = builder.Build();
+
+app.UseExceptionHandler();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseHttpsRedirection();
+
+// 6. Map Wolverine Endpoints (VSA Style)
+app.MapWolverineEndpoints(opts =>
+{
+    opts.UseFluentValidationProblemDetailMiddleware();
+
+});
+
+app.Run();
