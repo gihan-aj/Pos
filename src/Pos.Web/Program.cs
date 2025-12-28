@@ -3,6 +3,7 @@ using JasperFx.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pos.Web.Infrastructure;
+using Pos.Web.Infrastructure.Middleware;
 using Pos.Web.Infrastructure.Persistence;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
@@ -26,11 +27,12 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 // 2. Setup Wolverine
 builder.Host.UseWolverine(opts =>
 {
-    opts.PersistMessagesWithSqlServer(connectionString);
+    //opts.PersistMessagesWithSqlServer(connectionString);
 
     // Use the outbox pattern with EF Core for robust messaging
-    opts.UseEntityFrameworkCoreTransactions();
-    opts.Policies.AutoApplyTransactions();
+    //opts.UseEntityFrameworkCoreTransactions();
+    //opts.Policies.Add<ResultTransactionalPolicy>();
+    //opts.Policies.AutoApplyTransactions();
 
     opts.UseFluentValidation();
 

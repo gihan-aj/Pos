@@ -53,15 +53,7 @@ namespace Pos.Web.Features.Catalog.Categories.CreateCategory
             var category = categoryResult.Value;
             _dbContext.Categories.Add(category);
 
-            // --- THE MAGIC ---
-            // We DO NOT call SaveChangesAsync() here.
-            // Wolverine's "Transactional Middleware" (configured in Program.cs) detects this handler
-            // uses EF Core and will automatically:
-            //   1. Open a Transaction
-            //   2. Run this Handle method
-            //   3. Call SaveChangesAsync
-            //   4. Commit Transaction
-            //   5. (Bonus) Dispatch any Domain Events raised by the entity
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Result.Success(category);
         }

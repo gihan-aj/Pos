@@ -57,6 +57,8 @@ namespace Pos.Web.Features.Catalog.Categories.UpdateCategory
                 if (moveResult.IsFailure) return moveResult;
             }
 
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
             return Result.Success();
         }
     }
