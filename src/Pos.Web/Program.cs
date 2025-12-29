@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Pos.Web.Infrastructure;
 using Pos.Web.Infrastructure.Middleware;
 using Pos.Web.Infrastructure.Persistence;
+using Scalar.AspNetCore;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.FluentValidation;
@@ -72,7 +73,22 @@ builder.Services.AddAuthentication("Bearer")
     });
 builder.Services.AddAuthorization();
 
+// 6. Add Open API
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "OpenAPI V1");
+    });
+
+    app.MapScalarApiReference();
+}
 
 app.UseExceptionHandler();
 app.UseAuthentication();
