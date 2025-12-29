@@ -52,13 +52,13 @@ namespace Pos.Web.Shared.Extensions
             };
 
         private static string GetTitle(ErrorType errorType) =>
-            errorType switch
-            {
-                ErrorType.Validation => "Bad Request",
-                ErrorType.NotFound => "Not Found",
-                ErrorType.Conflict => "Conflict",
-                _ => "Server Error"
-            };
+        errorType switch
+        {
+            ErrorType.Validation => "One or more validation errors occurred.",
+            ErrorType.NotFound => "Not Found",
+            ErrorType.Conflict => "Conflict",
+            _ => "An error occurred while processing your request."
+        };
 
         private static string GetType(ErrorType errorType) =>
             errorType switch

@@ -6,7 +6,7 @@ using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Catalog.Categories.GetCategory
 {
-    public class GetCategoryHandler
+    public class GetCategoryHandler : IQueryHandler<GetCategoryQuery, CategoryResponse>
     {
         private readonly AppDbContext _dbContext;
 

@@ -5,7 +5,7 @@ using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Catalog.Categories.DeactivateCategory
 {
-    public partial class DeactivateCategoryHandler
+    public partial class DeactivateCategoryHandler : ICommandHandler<DeactivateCategoryCommand>
     {
         private readonly AppDbContext _dbContext;
 

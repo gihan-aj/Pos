@@ -1,23 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Pos.Web.Shared.Abstractions;
 using Pos.Web.Shared.Extensions;
-using Wolverine;
-using Wolverine.Http;
 
 namespace Pos.Web.Features.Catalog.Categories.UpdateCategory
 {
     public static class UpdateCategoryEndpoint
     {
-        [WolverinePut("/api/categories")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(typeof(ProblemDetails), 400)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        [ProducesResponseType(typeof(ProblemDetails), 409)]
-        public static async Task<IResult> Put(UpdateCategoryCommand command, IMessageBus bus, CancellationToken cancellationToken)
+        public static void MapUpdateCategory(this RouteGroupBuilder group)
         {
-            var result = await bus.InvokeAsync<Result>(command, cancellationToken);
-            return result.IsSuccess ? Results.Ok() : result.ToProblemDetails();
+            group.MapPut("/", async (UpdateCategoryCommand command, ISender mediator, CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(command, cancellationToken);
+
+                return result.IsSuccess
+                    ? Results.Ok()
+                    : result.ToProblemDetails();
+            })
+            .WithName("UodateCategory")
+            .WithSummary("Update a category")
+            .Produces(200)
+            .ProducesProblem(400)
+            .ProducesProblem(404)
+            .ProducesProblem(409);
         }
     }
 }

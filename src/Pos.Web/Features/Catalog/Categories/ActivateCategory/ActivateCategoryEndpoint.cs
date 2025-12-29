@@ -1,18 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Pos.Web.Shared.Abstractions;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Pos.Web.Shared.Extensions;
-using Wolverine;
-using Wolverine.Http;
 
 namespace Pos.Web.Features.Catalog.Categories.ActivateCategory
 {
     public static class ActivateCategoryEndpoint
     {
-        [WolverinePost("/api/categories/{id}/activate")]
-        public static async Task<IResult> Post(Guid id, IMessageBus bus, CancellationToken cancellationToken = default)
+        public static void MapActivateCategory(this RouteGroupBuilder group)
         {
-            var result = await bus.InvokeAsync<Result>(new ActivateCategoryCommand(id), cancellationToken);
-            return result.IsSuccess ? Results.Ok() : result.ToProblemDetails();
+            group.MapPost("/{id}/activate", async (Guid id, ISender mediator, CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(new ActivateCategoryCommand(id), cancellationToken);
+
+                return result.IsSuccess
+                    ? Results.Ok()
+                    : result.ToProblemDetails();
+            })
+            .WithName("ActivateCategory")
+            .WithSummary("Activated a deactivated category")
+            .Produces(200)
+            .ProducesProblem(404)
+            .ProducesProblem(409);
         }
     }
 }

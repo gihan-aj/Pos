@@ -5,7 +5,7 @@ using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Catalog.Categories.ActivateCategory
 {
-    public class ActivateCategoryHandler
+    public class ActivateCategoryHandler : ICommandHandler<ActivateCategoryCommand>
     {
         private readonly AppDbContext _dbContext;
 
@@ -20,6 +20,18 @@ namespace Pos.Web.Features.Catalog.Categories.ActivateCategory
                 .FirstOrDefaultAsync(c => c.Id == command.Id, cancellationToken);
             if (category is null) 
                 return Result.Failure(Error.NotFound("Category.NotFound", "Category not found."));
+
+            if(category.ParentCategoryId is not null)
+            {
+                var parentCategory = await _dbContext.Categories
+                    .FirstOrDefaultAsync(c => c.Id == category.ParentCategoryId, cancellationToken);
+
+                if (parentCategory is null)
+                    return Result.Failure(Error.NotFound("Category.NotFound", "Parent category not found."));
+
+                if (!parentCategory.IsActive)
+                    return Result.Failure(Error.Conflict("Category.ParentNotActive", "Cannot activate a category when parent category is not active."));
+            }
 
             // Do not activate sub categories
             category.Activate();

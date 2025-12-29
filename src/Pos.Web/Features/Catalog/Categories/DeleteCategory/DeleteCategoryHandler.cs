@@ -5,7 +5,7 @@ using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Catalog.Categories.DeleteCategory
 {
-    public class DeleteCategoryHandler
+    public class DeleteCategoryHandler : ICommandHandler<DeleteCategoryCommand>
     {
         private readonly AppDbContext _dbContext;
 

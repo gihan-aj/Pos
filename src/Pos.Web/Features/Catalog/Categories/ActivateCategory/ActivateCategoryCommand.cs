@@ -1,4 +1,6 @@
-﻿namespace Pos.Web.Features.Catalog.Categories.ActivateCategory
+﻿using Pos.Web.Shared.Abstractions;
+
+namespace Pos.Web.Features.Catalog.Categories.ActivateCategory
 {
-    public record ActivateCategoryCommand(Guid Id);
+    public record ActivateCategoryCommand(Guid Id) : ICommand;
 }

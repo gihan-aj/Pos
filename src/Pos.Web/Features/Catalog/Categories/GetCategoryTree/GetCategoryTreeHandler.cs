@@ -5,7 +5,7 @@ using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Catalog.Categories.GetCategoryTree
 {
-    public class GetCategoryTreeHandler
+    public class GetCategoryTreeHandler : IQueryHandler<GetCategoryTreeQuery, CategoryTreeItem>
     {
         private readonly AppDbContext _dbContext;
 

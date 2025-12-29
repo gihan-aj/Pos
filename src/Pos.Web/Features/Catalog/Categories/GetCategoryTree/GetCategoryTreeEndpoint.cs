@@ -1,24 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Pos.Web.Shared.Abstractions;
+﻿using MediatR;
 using Pos.Web.Shared.Extensions;
-using Wolverine;
-using Wolverine.Http;
 
 namespace Pos.Web.Features.Catalog.Categories.GetCategoryTree
 {
     public static class GetCategoryTreeEndpoint
     {
-        [WolverineGet("/api/categories/{id}/tree")]
-        [ProducesResponseType(typeof(CategoryTreeItem), 200)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        public static async Task<IResult> GetTree(
-            Guid id, 
-            bool? onlyActive, 
-            IMessageBus bus, 
-            CancellationToken cancellationToken = default)
+        public static void MapGetCategoryTree(this RouteGroupBuilder group)
         {
-            var result = await bus.InvokeAsync<Result<CategoryTreeItem>>(new GetCategoryTreeQuery(id, onlyActive ?? false), cancellationToken);
-            return result.IsSuccess ? Results.Ok(result.Value) : result.ToProblemDetails();
+            group.MapGet("/{id}/tree", async (Guid id, bool? onlyActive, ISender mediator, CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(new GetCategoryTreeQuery(id, onlyActive ?? false), cancellationToken);
+
+                return result.IsSuccess
+                    ? Results.Ok(result.Value)
+                    : result.ToProblemDetails();
+            })
+            .WithName("GetCategoryTree")
+            .WithSummary("Get the category tree")
+            .Produces(200, typeof(CategoryTreeItem))
+            .ProducesProblem(404);
         }
     }
 }

@@ -1,26 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Pos.Web.Shared.Abstractions;
+﻿using MediatR;
 using Pos.Web.Shared.Extensions;
-using Wolverine;
-using Wolverine.Http;
 
 namespace Pos.Web.Features.Catalog.Categories.GetCategory
 {
     public static class GetCategoryEndpoint
     {
-        [WolverineGet("/api/categories/{id}")]
-        [ProducesResponseType(typeof(CategoryResponse), 200)]
-        [ProducesResponseType(typeof(ProblemDetails), 404)]
-        public static async Task<IResult> Get(
-            Guid id,
-            string[]? includes,
-            IMessageBus bus,
-            CancellationToken cancellationToken = default)
+        public static void MapGetCategory(this RouteGroupBuilder group)
         {
-            var query = new GetCategoryQuery(id, includes);
-            var result = await bus.InvokeAsync<Result<CategoryResponse>>(query, cancellationToken);
+            group.MapGet("/{id}", async (Guid id, string[]? includes, ISender mediator, CancellationToken cancellationToken) =>
+            {
+                var query = new GetCategoryQuery(id, includes);
+                var result = await mediator.Send(query, cancellationToken);
 
-            return result.IsSuccess ? Results.Ok(result.Value) : result.ToProblemDetails();
+                return result.IsSuccess
+                    ? Results.Ok(result.Value)
+                    : result.ToProblemDetails();
+            })
+            .WithName("GetCategory")
+            .WithSummary("Get a category by id")
+            .Produces(200)
+            .ProducesProblem(404);
         }
     }
 }

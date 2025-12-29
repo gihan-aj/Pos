@@ -6,7 +6,7 @@ using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Catalog.Categories.UpdateCategory
 {
-    public class UpdateCategoryHandler
+    public class UpdateCategoryHandler : ICommandHandler<UpdateCategoryCommand>
     {
         private readonly AppDbContext _dbContext;
 

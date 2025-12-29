@@ -1,18 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Pos.Web.Shared.Abstractions;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Pos.Web.Shared.Extensions;
-using Wolverine;
-using Wolverine.Http;
 
 namespace Pos.Web.Features.Catalog.Categories.DeleteCategory
 {
     public static class DeleteCategoryEndpoint
     {
-        [WolverineDelete("/api/categories/{id}")]
-        public static async Task<IResult> Delete(Guid id, IMessageBus bus)
+        public static void MapDeleteCategory(this RouteGroupBuilder group)
         {
-            var result = await bus.InvokeAsync<Result>(new DeleteCategoryCommand(id));
-            return result.IsSuccess ? Results.NoContent() : result.ToProblemDetails();
+            group.MapDelete("/{id}", async (Guid id, ISender mediator, CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
+
+                return result.IsSuccess
+                    ? Results.NoContent()
+                    : result.ToProblemDetails();
+            })
+            .WithName("DeleteCategory")
+            .WithSummary("Delete a orphan category")
+            .Produces(200)
+            .ProducesProblem(404)
+            .ProducesProblem(409);
         }
     }
 }

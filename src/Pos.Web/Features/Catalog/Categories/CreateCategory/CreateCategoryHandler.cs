@@ -6,7 +6,7 @@ using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Catalog.Categories.CreateCategory
 {
-    public class CreateCategoryHandler
+    public class CreateCategoryHandler : ICommandHandler<CreateCategoryCommand, Category>
     {
         private readonly AppDbContext _dbContext;
 

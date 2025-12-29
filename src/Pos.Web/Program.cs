@@ -1,17 +1,11 @@
 using FluentValidation;
-using JasperFx.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Pos.Web.Features.Catalog.Categories;
 using Pos.Web.Infrastructure;
-using Pos.Web.Infrastructure.Middleware;
+using Pos.Web.Infrastructure.Behaviors;
 using Pos.Web.Infrastructure.Persistence;
 using Scalar.AspNetCore;
-using Wolverine;
-using Wolverine.EntityFrameworkCore;
-using Wolverine.FluentValidation;
-using Wolverine.Http;
-using Wolverine.Http.FluentValidation;
-using Wolverine.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,24 +17,15 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.UseSqlServer(connectionString);
     options.AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
-}, optionsLifetime: ServiceLifetime.Singleton);
-
-// 2. Setup Wolverine
-builder.Host.UseWolverine(opts =>
-{
-    //opts.PersistMessagesWithSqlServer(connectionString);
-
-    // Use the outbox pattern with EF Core for robust messaging
-    //opts.UseEntityFrameworkCoreTransactions();
-    //opts.Policies.Add<ResultTransactionalPolicy>();
-    //opts.Policies.AutoApplyTransactions();
-
-    opts.UseFluentValidation();
-
-    // Auto-discover handlers in the assembly
-    opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
 });
-builder.Services.AddWolverineHttp();
+
+// 1. Add MediatR
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+
+    // Register the Validation Behavior
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+});
 
 // 3. Setup Validation
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -53,7 +38,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer(options =>
     {
-        options.Authority = "[http://localhost:8080](http://localhost:8080)";
+        options.Authority = "http://localhost:8080";
         options.Audience = "pos-api";
 
         // For development, allow http if needed (though you are using https)
@@ -108,11 +93,6 @@ using (var scope = app.Services.CreateScope())
     await seeder.SeedAsync();
 }
 
-// 6. Map Wolverine Endpoints (VSA Style)
-app.MapWolverineEndpoints(opts =>
-{
-    opts.UseFluentValidationProblemDetailMiddleware();
-
-});
+app.MapCategoryEndpoints();
 
 app.Run();

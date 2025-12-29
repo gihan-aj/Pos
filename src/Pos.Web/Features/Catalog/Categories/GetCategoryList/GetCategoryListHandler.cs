@@ -1,11 +1,10 @@
-﻿using Microsoft.Build.Tasks.Deployment.Bootstrapper;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Pos.Web.Infrastructure.Persistence;
 using Pos.Web.Shared.Abstractions;
 
 namespace Pos.Web.Features.Catalog.Categories.GetCategoryList
 {
-    public class GetCategoryListHandler
+    public class GetCategoryListHandler : IQueryHandler<GetCategoriesQuery, PagedList<CategoryListItem>>
     {
         private readonly AppDbContext _dbContext;
 

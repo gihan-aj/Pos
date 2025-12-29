@@ -1,22 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
 using Pos.Web.Shared.Abstractions;
 using Pos.Web.Shared.Extensions;
-using Wolverine;
-using Wolverine.Http;
 
 namespace Pos.Web.Features.Catalog.Categories.GetCategoryList
 {
     public static class GetCategoryListEndpoint
     {
-        [WolverineGet("/api/categories")]
-        [ProducesResponseType(typeof(PagedList<CategoryListItem>), 200)]
-        public static async Task<IResult> Get(
-            [AsParameters] GetCategoriesQuery query,
-            IMessageBus bus,
-            CancellationToken cancellationToken = default)
+        public static void MapGetCategoryList(this RouteGroupBuilder group)
         {
-            var result = await bus.InvokeAsync<Result<PagedList<CategoryListItem>>>(query);
-            return result.IsSuccess ? Results.Ok(result.Value) : result.ToProblemDetails();
+            group.MapGet("/", async ([AsParameters] GetCategoriesQuery query, ISender mediator, CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(query, cancellationToken);
+
+                return result.IsSuccess
+                    ? Results.Ok(result.Value)
+                    : result.ToProblemDetails();
+            })
+            .WithName("GetCategoryList")
+            .WithSummary("Get paginated category list")
+            .Produces(200, typeof(PagedList<CategoryListItem>));
         }
     }
 }
