@@ -96,6 +96,18 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Ensure DB exists (optional, good for local dev)
+    dbContext.Database.EnsureCreated();
+
+    // Run Seeder
+    var seeder = new Pos.Web.Infrastructure.Persistence.Seed.DataSeeder(dbContext);
+    await seeder.SeedAsync();
+}
+
 // 6. Map Wolverine Endpoints (VSA Style)
 app.MapWolverineEndpoints(opts =>
 {
