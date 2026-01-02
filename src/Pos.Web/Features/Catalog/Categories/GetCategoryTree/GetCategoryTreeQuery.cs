@@ -2,5 +2,5 @@
 
 namespace Pos.Web.Features.Catalog.Categories.GetCategoryTree
 {
-    public record GetCategoryTreeQuery(Guid RootId, bool OnlyActive) : IQuery<CategoryTreeItem>;
+    public record GetCategoryTreeQuery(Guid? RootId, bool IsActive) : IQuery<List<CategoryTreeItem>>;
 }

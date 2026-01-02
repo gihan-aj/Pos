@@ -4,5 +4,6 @@
         Guid Id, 
         string Name,
         bool IsActive,
+        int DisplayOrder,
         List<CategoryTreeItem> Children);
 }

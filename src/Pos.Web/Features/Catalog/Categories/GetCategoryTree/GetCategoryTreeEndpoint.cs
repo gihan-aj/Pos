@@ -7,17 +7,17 @@ namespace Pos.Web.Features.Catalog.Categories.GetCategoryTree
     {
         public static void MapGetCategoryTree(this RouteGroupBuilder group)
         {
-            group.MapGet("/{id}/tree", async (Guid id, bool? onlyActive, ISender mediator, CancellationToken cancellationToken) =>
+            group.MapGet("/tree", async (Guid? id, bool? isActive, ISender mediator, CancellationToken cancellationToken = default) =>
             {
-                var result = await mediator.Send(new GetCategoryTreeQuery(id, onlyActive ?? false), cancellationToken);
+                var result = await mediator.Send(new GetCategoryTreeQuery(id ?? null, isActive ?? false), cancellationToken);
 
                 return result.IsSuccess
                     ? Results.Ok(result.Value)
                     : result.ToProblemDetails();
             })
             .WithName("GetCategoryTree")
-            .WithSummary("Get the category tree")
-            .Produces(200, typeof(CategoryTreeItem))
+            .WithSummary("Get full category tree or sub-tree")
+            .Produces<List<CategoryTreeItem>>(200)
             .ProducesProblem(404);
         }
     }

@@ -5,7 +5,7 @@ using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Catalog.Categories.GetCategoryTree
 {
-    public class GetCategoryTreeHandler : IQueryHandler<GetCategoryTreeQuery, CategoryTreeItem>
+    public class GetCategoryTreeHandler : IQueryHandler<GetCategoryTreeQuery, List<CategoryTreeItem>>
     {
         private readonly AppDbContext _dbContext;
 
@@ -14,55 +14,68 @@ namespace Pos.Web.Features.Catalog.Categories.GetCategoryTree
             _dbContext = dbContext;
         }
 
-        public async Task<Result<CategoryTreeItem>> Handle(GetCategoryTreeQuery query, CancellationToken cancellationToken)
+        public async Task<Result<List<CategoryTreeItem>>> Handle(GetCategoryTreeQuery query, CancellationToken cancellationToken)
         {
-            var rootQuery = _dbContext.Categories.AsNoTracking().AsQueryable();
-            if (query.OnlyActive)
+            var dbQuery = _dbContext.Categories.AsNoTracking().AsQueryable();
+
+            if (query.IsActive)
             {
-                rootQuery = rootQuery.Where(c => c.IsActive);
+                dbQuery = dbQuery.Where(c => c.IsActive);
             }
 
-            var root = await rootQuery
-                .FirstOrDefaultAsync(c => c.Id == query.RootId, cancellationToken);
+            Guid? searchRootId = null;
+            if (query.RootId.HasValue)
+            {
+                var rootEntity = await _dbContext.Categories
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(c => c.Id == query.RootId.Value && c.IsActive == query.IsActive, cancellationToken);
+                if (rootEntity is null)
+                    return Result.Failure<List<CategoryTreeItem>>(Error.NotFound("Category.NotFound", "Category not found"));
 
-            if (root is null)
-                return Result.Failure<CategoryTreeItem>(Error.NotFound("Category.NotFound", "Category not found"));
+                // Fetch root + descendents
+                dbQuery = dbQuery.Where(c => c.Path.StartsWith(rootEntity.Path));
+                searchRootId = rootEntity.Id;
+            }
 
-            var decendentsQuery = _dbContext.Categories.AsNoTracking()
-                .Where(c => c.Path.StartsWith(root.Path) && c.Id != root.Id);
-
-            if (query.OnlyActive)
-                decendentsQuery = decendentsQuery.Where(c => c.IsActive);
-
-            var decendents = await decendentsQuery
+            var categories = await dbQuery
                 .OrderBy(c => c.Level)
                 .ThenBy(c => c.DisplayOrder)
                 .ToListAsync(cancellationToken);
 
-            // Reconstruct tree in memory (O(n))
-            var lookup = decendents.ToDictionary(
-                c => c.Id,
-                c => new CategoryTreeItem(c.Id, c.Name, c.IsActive, new List<CategoryTreeItem>()));
-
-            // Add root to look up temporarily to ease linking if needed, or handle separately
-            var rootItem = new CategoryTreeItem(root.Id, root.Name, root.IsActive, new List<CategoryTreeItem>());
-
-            foreach (var category in decendents)
+            if(categories.Count == 0)
             {
-                var item = lookup[category.Id];
-
-                if(category.ParentCategoryId == root.Id)
-                {
-                    rootItem.Children.Add(item);
-                }
-                else if(category.ParentCategoryId.HasValue && lookup.TryGetValue(category.ParentCategoryId.Value, out var parentItem))
-                {
-                    parentItem.Children.Add(item);
-                }
-                // Orphan data should not exist
+                return Result.Success(new List<CategoryTreeItem>());
             }
 
-            return Result.Success(rootItem);
+            var lookUp = categories.ToDictionary(
+                c => c.Id,
+                c => new CategoryTreeItem(c.Id, c.Name, c.IsActive, c.DisplayOrder, new List<CategoryTreeItem>()));
+
+            var resultRoots = new List<CategoryTreeItem>();
+            foreach(var cat in categories)
+            {
+                // It is a root result if:
+                // 1. It has no parent (Global Root)
+                // 2. OR its parent is NOT in the fetched list (meaning it is the 'RootId' from the parameter)
+                if (lookUp.TryGetValue(cat.Id, out var item))
+                {
+                    bool isRootNode = cat.ParentCategoryId is null || !lookUp.ContainsKey(cat.ParentCategoryId.Value);
+                    if (isRootNode)
+                    {
+                        resultRoots.Add(item);
+                    }
+                    else
+                    {
+                        // It has a parent in the list, add to parent's children
+                        if (cat.ParentCategoryId.HasValue && lookUp.TryGetValue(cat.ParentCategoryId.Value, out var parentItem))
+                        {
+                            parentItem.Children.Add(item);
+                        }
+                    }
+                }
+            }
+
+            return Result.Success(resultRoots);
         }
     }
 }
