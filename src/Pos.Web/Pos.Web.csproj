@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Catalog\Pricing\" />
-    <Folder Include="Features\Catalog\Products\" />
   </ItemGroup>
 
 </Project>
