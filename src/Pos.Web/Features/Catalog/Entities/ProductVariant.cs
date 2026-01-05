@@ -25,6 +25,7 @@ namespace Pos.Web.Features.Catalog.Entities
             Cost = cost;
             StockQuantity = stockQuantity;
             IsAvailable = stockQuantity > 0;
+            IsActive = true;
         }
 
         public Guid ProductId { get; private set; }
@@ -36,6 +37,7 @@ namespace Pos.Web.Features.Catalog.Entities
         public decimal? Price { get; private set; } // Null = base price
         public decimal? Cost { get; private set; }
         public int StockQuantity { get; private set; }
+        public bool IsActive { get; private set; }
         public bool IsAvailable { get; private set; }
 
         public Result<int> AdjustStock(int quantityDelta)
@@ -61,5 +63,9 @@ namespace Pos.Web.Features.Catalog.Entities
             StockQuantity = stockQuantity;
             IsAvailable = StockQuantity > 0;
         }
+
+        internal void Activate() => IsActive = true;
+
+        internal void Deactivate() => IsActive = false;
     }
 }

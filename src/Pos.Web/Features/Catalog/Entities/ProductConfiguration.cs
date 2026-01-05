@@ -55,6 +55,8 @@ namespace Pos.Web.Features.Catalog.Entities
 
                 vb.Property(v => v.Price).HasPrecision(18, 2);
                 vb.Property(v => v.Cost).HasPrecision(18, 2);
+
+                vb.Property(v => v.IsActive).IsRequired().HasDefaultValue(true);
             });
 
             // --- IMAGES ---

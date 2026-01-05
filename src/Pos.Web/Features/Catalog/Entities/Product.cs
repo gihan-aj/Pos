@@ -97,6 +97,30 @@ namespace Pos.Web.Features.Catalog.Entities
             return Result.Success(product);
         }
 
+        public void UpdateDetails(
+            string name,
+            string? description,
+            Guid categoryId,
+            string? brand,
+            string? material,
+            Gender gender,
+            decimal basePrice,
+            List<string> tags)
+        {
+            Name = name;
+            Description = description;
+            CategoryId = categoryId;
+            Brand = brand;
+            Material = material;
+            Gender = gender;
+            BasePrice = basePrice;
+            Tags = tags;
+        }
+
+        public void Activate() => IsActive = true;
+
+        public void Deactivate() => IsActive = false;
+
         // --- Behaviors ---
         public Result<ProductVariant> AddVarient(
             string size, 
@@ -149,6 +173,26 @@ namespace Pos.Web.Features.Catalog.Entities
 
             variant.Update(size, color, sku, priceOverride, cost, stockQuantity);
 
+            return Result.Success();
+        }
+
+        public Result ActivateVarient(Guid variantId)
+        {
+            var variant = _varients.FirstOrDefault(v => v.Id == variantId);
+            if (variant is null)
+                return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
+
+            variant.Activate();
+            return Result.Success();
+        }
+        
+        public Result DeactivateVarient(Guid variantId)
+        {
+            var variant = _varients.FirstOrDefault(v => v.Id == variantId);
+            if (variant is null)
+                return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
+
+            variant.Deactivate();
             return Result.Success();
         }
 
