@@ -133,5 +133,37 @@ namespace Pos.Web.Features.Catalog.Entities
 
             return Result.Success();
         }
+
+        public Result RemoveImage(Guid imageId)
+        {
+            var image = _images.FirstOrDefault(img => img.Id == imageId);
+            if (image is null)
+                return Result.Failure(Error.NotFound("Image.NotFound", "Image not found."));
+
+            _images.Remove(image);
+
+            if(image.IsPrimary && _images.Count > 0)
+            {
+                _images[0].SetPrimary(true);
+            }
+
+            return Result.Success();
+        }
+
+        public Result SetPrimaryImage(Guid imageId)
+        {
+            var image = _images.FirstOrDefault(img => img.Id == imageId);
+            if (image is null)
+                return Result.Failure(Error.NotFound("Image.NotFound", "Image not found."));
+
+            if(image.IsPrimary) 
+                return Result.Success();
+
+            foreach(var img in _images) img.SetPrimary(false);
+
+            image.SetPrimary(true);
+
+            return Result.Success();
+        }
     }
 }

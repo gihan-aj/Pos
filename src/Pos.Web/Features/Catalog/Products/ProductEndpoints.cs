@@ -1,6 +1,7 @@
 ﻿using Pos.Web.Features.Catalog.Products.AddProductImage;
 using Pos.Web.Features.Catalog.Products.AddProductVariant;
 using Pos.Web.Features.Catalog.Products.CreateProduct;
+using Pos.Web.Features.Catalog.Products.SetPrimaryProductImage;
 
 namespace Pos.Web.Features.Catalog.Products
 {
@@ -14,6 +15,7 @@ namespace Pos.Web.Features.Catalog.Products
             group.MapCreateProduct();
             group.MapAddProductVariant();
             group.MapAddProductImage();
+            group.MapSetPrimaryProductImage();
         }
     }
 }
