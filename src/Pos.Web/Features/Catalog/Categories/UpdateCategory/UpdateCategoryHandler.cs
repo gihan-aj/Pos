@@ -33,7 +33,7 @@ namespace Pos.Web.Features.Catalog.Categories.UpdateCategory
                     return Result.Failure(Error.NotFound("Category.HasDuplicate", "Category name already in use."));
             }
 
-            category.UpdateDetails(command.Name, command.Description, category.IconUrl, category.Color);
+            category.UpdateDetails(command.Name, command.Description, command.DisplayOrder, command.IconUrl, command.Color);
 
             if(category.ParentCategoryId != command.ParentCategoryId)
             {

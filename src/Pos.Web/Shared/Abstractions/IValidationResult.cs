@@ -7,7 +7,7 @@ namespace Pos.Web.Shared.Abstractions
     {
         public static readonly Error ValidationError = new(
             "ValidationError",
-            "A validation problem occurred.",
+            "One or more validation problems occurred.",
             ErrorType.Validation);
 
         Error[] Errors { get; }

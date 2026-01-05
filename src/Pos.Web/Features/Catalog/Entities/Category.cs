@@ -100,11 +100,12 @@ namespace Pos.Web.Features.Catalog.Entities
         }
 
         // --- Behaviors ---
-        public void UpdateDetails(string name, string? description, string? iconUrl, string? color)
+        public void UpdateDetails(string name, string? description, int displayOrder, string? iconUrl, string? color)
         {
             // Simple validations can go here or in a Validator before calling this
             Name = name;
             Description = description;
+            DisplayOrder = displayOrder;
             IconUrl = iconUrl;
             Color = color;
         }

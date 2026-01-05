@@ -54,7 +54,7 @@ namespace Pos.Web.Shared.Extensions
         private static string GetTitle(ErrorType errorType) =>
         errorType switch
         {
-            ErrorType.Validation => "One or more validation errors occurred.",
+            ErrorType.Validation => "Validation Error",
             ErrorType.NotFound => "Not Found",
             ErrorType.Conflict => "Conflict",
             _ => "An error occurred while processing your request."

@@ -23,7 +23,7 @@ namespace Pos.Web.Infrastructure
             {
                 Status = StatusCodes.Status500InternalServerError,
                 Title = "Server Error",
-                Type = "[https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1](https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1)",
+                Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
                 Detail = "An internal error occurred."
             };
 
