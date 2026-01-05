@@ -50,5 +50,16 @@ namespace Pos.Web.Features.Catalog.Entities
 
             return Result.Success(StockQuantity);
         }
+
+        internal void Update(string size, string color, string sku, decimal? price, decimal? cost, int stockQuantity)
+        {
+            Size = size;
+            Color = color;
+            Sku = sku;
+            Price = price;
+            Cost = cost;
+            StockQuantity = stockQuantity;
+            IsAvailable = StockQuantity > 0;
+        }
     }
 }

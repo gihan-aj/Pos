@@ -118,6 +118,40 @@ namespace Pos.Web.Features.Catalog.Entities
             return varient;
         }
 
+        public Result RemoveVariant(Guid variantId)
+        {
+            var variant = _varients.FirstOrDefault(v => v.Id == variantId);
+            if(variant is null)
+                return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
+
+            // Bolck if quantity > 0 ??
+            _varients.Remove(variant);
+
+            return Result.Success();
+        }
+
+        public Result UpdateVariant(
+            Guid variantId,
+            string size, 
+            string color,
+            string sku,
+            decimal? priceOverride,
+            decimal? cost,
+            int stockQuantity)
+        {
+            var variant = _varients.FirstOrDefault(v => v.Id == variantId);
+            if (variant is null)
+                return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
+
+            bool isDuplicate = _varients.Any(v => v.Id != variantId && (v.Sku == sku || (v.Color == color && v.Size == size)));
+            if (isDuplicate)
+                return Result.Failure(Error.Conflict("Variant.Duplicate", "Another variant with this SKU or Size/Color combination already exists."));
+
+            variant.Update(size, color, sku, priceOverride, cost, stockQuantity);
+
+            return Result.Success();
+        }
+
         public Result AddImage(string imageUrl, bool isPrimary)
         {
             if (isPrimary)
