@@ -98,7 +98,7 @@ namespace Pos.Web.Features.Catalog.Entities
         }
 
         // --- Behaviors ---
-        public Result AddVarient(
+        public Result<ProductVariant> AddVarient(
             string size, 
             string color, 
             string sku, 
@@ -107,15 +107,15 @@ namespace Pos.Web.Features.Catalog.Entities
             int stockQuantity = 0)
         {
             if(_varients.Any(v => v.Sku == sku))
-                return Result.Failure(Error.Conflict("Variant.DuplicateSku", $"Variant with SKU '{sku}' already exists."));
+                return Result.Failure<ProductVariant>(Error.Conflict("Variant.DuplicateSku", $"Variant with SKU '{sku}' already exists."));
 
             if(_varients.Any(v => v.Size == size && v.Color == color))
-                return Result.Failure(Error.Conflict("Variant.DuplicateCombo", $"Variant with Size '{size}' and Color '{color}' already exists."));
+                return Result.Failure<ProductVariant>(Error.Conflict("Variant.DuplicateCombo", $"Variant with Size '{size}' and Color '{color}' already exists."));
 
             var varient = new ProductVariant(Id, sku, size, color, priceOverride, cost, stockQuantity);
             _varients.Add(varient);
 
-            return Result.Success();
+            return varient;
         }
 
         public Result AddImage(string imageUrl, bool isPrimary)

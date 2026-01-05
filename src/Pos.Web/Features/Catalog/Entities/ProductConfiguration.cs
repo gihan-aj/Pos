@@ -19,7 +19,7 @@ namespace Pos.Web.Features.Catalog.Entities
 
             // Comparer logic
             var tagComparer = new ValueComparer<List<string>>(
-                (c1, c2) => c1!.SequenceEqual(c2!), // how to compare
+                (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2), // how to compare
                 c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), // how to hash
                 c => c.ToList()); // How to snapshot (deep copy)
 
@@ -43,6 +43,7 @@ namespace Pos.Web.Features.Catalog.Entities
             builder.OwnsMany(p => p.Varients, vb =>
             {
                 vb.ToTable("ProductVarients");
+                vb.Property(v => v.Id).ValueGeneratedNever();
                 vb.HasKey(p => p.Id);
                 vb.WithOwner().HasForeignKey(v => v.ProductId);
 
@@ -60,6 +61,7 @@ namespace Pos.Web.Features.Catalog.Entities
             builder.OwnsMany(p => p.Images, ib =>
             {
                 ib.ToTable("ProductImages");
+                ib.Property(i => i.Id).ValueGeneratedNever();
                 ib.HasKey(i => i.Id);
                 ib.WithOwner().HasForeignKey(i => i.ProductId);
 

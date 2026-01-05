@@ -5,7 +5,7 @@ namespace Pos.Web.Features.Catalog.Products.CreateProduct
 {
     public static class CreateProductEndpoint
     {
-        public static void MapCreateProductEndpoint(this RouteGroupBuilder group)
+        public static void MapCreateProduct(this RouteGroupBuilder group)
         {
             group.MapPost("/", async (CreateProductCommand command, ISender mediator, CancellationToken cancellationToken) =>
             {

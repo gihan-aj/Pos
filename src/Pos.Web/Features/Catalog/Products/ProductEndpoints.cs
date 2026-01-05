@@ -1,4 +1,5 @@
-﻿using Pos.Web.Features.Catalog.Products.CreateProduct;
+﻿using Pos.Web.Features.Catalog.Products.AddProductVariant;
+using Pos.Web.Features.Catalog.Products.CreateProduct;
 
 namespace Pos.Web.Features.Catalog.Products
 {
@@ -9,7 +10,8 @@ namespace Pos.Web.Features.Catalog.Products
             var group = app.MapGroup("/api/products")
                 .WithTags("Products");
 
-            group.MapCreateProductEndpoint();
+            group.MapCreateProduct();
+            group.MapAddProductVariant();
         }
     }
 }
