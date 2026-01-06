@@ -10,14 +10,14 @@ namespace Pos.Web.Features.Catalog.Entities
             builder.HasKey(c => c.Id);
 
             builder.Property(c => c.Name)
-                .HasMaxLength(100)
+                .HasMaxLength(50)
                 .IsRequired();
 
-            builder.HasIndex(c => c.Name)
+            builder.HasIndex(c => new { c.Name, c.ParentCategoryId })
                 .IsUnique();
 
             builder.Property(c => c.Path)
-                .HasMaxLength(4000)
+                .HasMaxLength(180)
                 .IsUnicode(false)
                 .IsRequired();
 
@@ -25,10 +25,10 @@ namespace Pos.Web.Features.Catalog.Entities
             builder.HasIndex(c => c.Path);
 
             builder.Property(c => c.Description)
-                .HasMaxLength(500);
+                .HasMaxLength(250);
 
             builder.Property(c => c.IconUrl)
-                .HasMaxLength(255);
+                .HasMaxLength(250);
 
             builder.Property(c => c.Color)
                 .HasMaxLength(9); // Matches hex codes (e.g., #RRGGBBAA)

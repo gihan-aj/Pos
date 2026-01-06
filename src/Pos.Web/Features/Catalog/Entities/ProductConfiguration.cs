@@ -11,11 +11,11 @@ namespace Pos.Web.Features.Catalog.Entities
         {
             // -- Product --
             builder.HasKey(p => p.Id);
-            builder.Property(p => p.Name).HasMaxLength(200).IsRequired();
+            builder.Property(p => p.Name).HasMaxLength(100).IsRequired();
             builder.Property(p => p.Sku).HasMaxLength(50).IsRequired(false);
             builder.HasIndex(p => p.Sku).IsUnique().HasFilter("[Sku] IS NOT NULL"); // Unique if present
 
-            builder.Property(p => p.Description).HasMaxLength(500).IsRequired(false);
+            builder.Property(p => p.Description).HasMaxLength(250).IsRequired(false);
             builder.Property(p => p.Brand).HasMaxLength(50).IsRequired(false);
             builder.Property(p => p.Material).HasMaxLength(50).IsRequired(false);
 
@@ -65,8 +65,8 @@ namespace Pos.Web.Features.Catalog.Entities
 
                 vb.Property(v => v.IsActive).IsRequired().HasDefaultValue(true);
 
-                builder.Property(v => v.CreatedBy).HasMaxLength(36);
-                builder.Property(v => v.ModifiedBy).HasMaxLength(36).IsRequired(false);
+                vb.Property(v => v.CreatedBy).HasMaxLength(36);
+                vb.Property(v => v.ModifiedBy).HasMaxLength(36).IsRequired(false);
             });
 
             // --- IMAGES ---
@@ -77,7 +77,7 @@ namespace Pos.Web.Features.Catalog.Entities
                 ib.HasKey(i => i.Id);
                 ib.WithOwner().HasForeignKey(i => i.ProductId);
 
-                ib.Property(i => i.ImageUrl).HasMaxLength(500).IsRequired();
+                ib.Property(i => i.ImageUrl).HasMaxLength(250).IsRequired();
             });
         }
     }

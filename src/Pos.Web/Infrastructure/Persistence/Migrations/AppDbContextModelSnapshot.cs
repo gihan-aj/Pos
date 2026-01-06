@@ -33,21 +33,22 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(9)");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("CreatedOnUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("int");
 
                     b.Property<string>("IconUrl")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -56,33 +57,35 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid?>("ParentCategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Path")
                         .IsRequired()
-                        .HasMaxLength(4000)
+                        .HasMaxLength(180)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(4000)");
+                        .HasColumnType("varchar(180)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.HasIndex("ParentCategoryId");
 
                     b.HasIndex("Path");
+
+                    b.HasIndex("Name", "ParentCategoryId")
+                        .IsUnique()
+                        .HasFilter("[ParentCategoryId] IS NOT NULL");
 
                     b.ToTable("Categories");
                 });
@@ -98,19 +101,22 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Brand")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime>("CreatedOnUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<int?>("Gender")
                         .HasColumnType("int");
@@ -119,18 +125,20 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Material")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<DateTime?>("ModifiedOnUtc")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Sku")
                         .HasMaxLength(50)
@@ -180,8 +188,8 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("ImageUrl")
                                 .IsRequired()
-                                .HasMaxLength(500)
-                                .HasColumnType("nvarchar(500)");
+                                .HasMaxLength(250)
+                                .HasColumnType("nvarchar(250)");
 
                             b1.Property<bool>("IsPrimary")
                                 .HasColumnType("bit");
@@ -199,7 +207,7 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("ProductId");
                         });
 
-                    b.OwnsMany("Pos.Web.Features.Catalog.Entities.ProductVariant", "Varients", b1 =>
+                    b.OwnsMany("Pos.Web.Features.Catalog.Entities.ProductVariant", "Variants", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .HasColumnType("uniqueidentifier");
@@ -214,7 +222,8 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                                 .HasColumnType("decimal(18,2)");
 
                             b1.Property<string>("CreatedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<DateTime>("CreatedOnUtc")
                                 .HasColumnType("datetime2");
@@ -228,7 +237,8 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                                 .HasColumnType("bit");
 
                             b1.Property<string>("ModifiedBy")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(36)
+                                .HasColumnType("nvarchar(36)");
 
                             b1.Property<DateTime?>("ModifiedOnUtc")
                                 .HasColumnType("datetime2");
@@ -260,7 +270,7 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                             b1.HasIndex("Sku")
                                 .IsUnique();
 
-                            b1.ToTable("ProductVarients", (string)null);
+                            b1.ToTable("ProductVariants", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ProductId");
@@ -270,7 +280,7 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
 
                     b.Navigation("Images");
 
-                    b.Navigation("Varients");
+                    b.Navigation("Variants");
                 });
 
             modelBuilder.Entity("Pos.Web.Features.Catalog.Entities.Category", b =>

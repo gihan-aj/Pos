@@ -18,10 +18,10 @@ namespace Pos.Web.Features.Catalog.Categories.CreateCategory
         public async Task<Result<Category>> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
         {
             bool nameExists = await _dbContext.Categories
-                .AnyAsync(c => c.Name == command.Name, cancellationToken);
+                .AnyAsync(c => c.Name == command.Name && c.ParentCategoryId == command.ParentCategoryId, cancellationToken);
             if (nameExists)
             {
-                return Result.Failure<Category>(Error.Conflict("Name.Duplicate", $"The category '{command.Name}' already exists."));
+                return Result.Failure<Category>(Error.Conflict("Name.Duplicate", $"A category named '{command.Name}' already exists under the same parent category."));
             }
 
             Category? parentCategory = null;

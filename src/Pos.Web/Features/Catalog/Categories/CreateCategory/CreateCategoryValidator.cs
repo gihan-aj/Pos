@@ -8,7 +8,11 @@ namespace Pos.Web.Features.Catalog.Categories.CreateCategory
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required")
-                .MaximumLength(100);
+                .MaximumLength(50);
+
+            RuleFor(x => x.Description)
+                .MaximumLength(250)
+                .When(x => !string.IsNullOrWhiteSpace(x.Description));
 
             RuleFor(x => x.DisplayOrder)
                 .GreaterThanOrEqualTo(0);
@@ -17,6 +21,10 @@ namespace Pos.Web.Features.Catalog.Categories.CreateCategory
                 .Matches("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
                 .When(x => !string.IsNullOrEmpty(x.Color))
                 .WithMessage("Color must be a valid Hex code (e.g., #FF0000)");
+
+            RuleFor(x => x.IconUrl)
+                .MaximumLength(250)
+                .When(x => !string.IsNullOrWhiteSpace(x.IconUrl));
         }
     }
 }

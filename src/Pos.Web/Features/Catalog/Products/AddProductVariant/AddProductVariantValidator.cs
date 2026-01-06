@@ -15,6 +15,7 @@ namespace Pos.Web.Features.Catalog.Products.AddProductVariant
 
             RuleFor(x => x.SkuOverride)
                 .MinimumLength(3)
+                .MaximumLength(50)
                 .When(x => !string.IsNullOrEmpty(x.SkuOverride));
         }
     }

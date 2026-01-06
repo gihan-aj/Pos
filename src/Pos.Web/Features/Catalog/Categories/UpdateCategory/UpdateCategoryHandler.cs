@@ -28,9 +28,9 @@ namespace Pos.Web.Features.Catalog.Categories.UpdateCategory
             if(category.Name != command.Name)
             {
                 bool other = await _dbContext.Categories
-                    .AnyAsync(c => c.Name == command.Name && c.Name != category.Name, cancellationToken);
+                    .AnyAsync(c => c.Name == command.Name && c.Name != category.Name && c.ParentCategoryId == command.ParentCategoryId, cancellationToken);
                 if(other)
-                    return Result.Failure(Error.NotFound("Category.HasDuplicate", "Category name already in use."));
+                    return Result.Failure(Error.NotFound("Category.HasDuplicate", "Category name already in use under the same parent category."));
             }
 
             category.UpdateDetails(command.Name, command.Description, command.DisplayOrder, command.IconUrl, command.Color);

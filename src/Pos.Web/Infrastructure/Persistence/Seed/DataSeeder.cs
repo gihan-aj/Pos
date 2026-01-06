@@ -14,66 +14,108 @@ namespace Pos.Web.Infrastructure.Persistence.Seed
         public async Task SeedAsync()
         {
             if (_dbContext.Categories.Any())
-            {
-                return; // Already seeded
-            }
+                return;
 
-            // 1. Root: Beverages (Active, Order 1)
-            var beveragesResult = Category.Create("Beverages", "Drinks and liquids", null, 1, "beverage-icon", "#FF0000");
-            var beverages = beveragesResult.Value;
-            _dbContext.Categories.Add(beverages);
+            // ========== ROOT CATEGORIES ==========
+            var men = Category.Create(
+                "Men",
+                "Men's clothing",
+                null,
+                0,
+                "men-icon",
+                "#1E88E5"
+            ).Value;
+            _dbContext.Categories.Add(men);
 
-            // 1.1 Child: Soft Drinks (Active)
-            var softDrinksResult = Category.Create("Soft Drinks", "Carbonated beverages", beverages, 1, null, null);
-            var softDrinks = softDrinksResult.Value;
-            _dbContext.Categories.Add(softDrinks);
+            var women = Category.Create(
+                "Women",
+                "Women's clothing",
+                null,
+                1,
+                "women-icon",
+                "#E91E63"
+            ).Value;
+            _dbContext.Categories.Add(women);
 
-            // 1.1.1 Grandchild: Colas (Active)
-            var colas = Category.Create("Colas", "Coke, Pepsi, etc.", softDrinks, 1, null, null).Value;
-            _dbContext.Categories.Add(colas);
+            var kids = Category.Create(
+                "Kids",
+                "Kids clothing",
+                null,
+                2,
+                "kids-icon",
+                "#FF9800"
+            ).Value;
+            _dbContext.Categories.Add(kids);
 
-            // 1.1.2 Grandchild: Energy Drinks (Active)
-            var energy = Category.Create("Energy Drinks", "Red Bull, Monster", softDrinks, 2, null, null).Value;
-            _dbContext.Categories.Add(energy);
+            var accessories = Category.Create(
+                "Accessories",
+                "Fashion accessories",
+                null,
+                3,
+                "accessories-icon",
+                "#6D4C41"
+            ).Value;
+            _dbContext.Categories.Add(accessories);
 
-            // 1.2 Child: Alcohol (Inactive - Test filtering)
-            var alcoholResult = Category.Create("Alcohol", "21+ Only", beverages, 2, null, null);
-            var alcohol = alcoholResult.Value;
-            alcohol.Deactivate(); // Deactivate immediately
-            _dbContext.Categories.Add(alcohol);
+            // ========== MEN ==========
+            var menTops = Category.Create("Tops", "Upper wear for men", men, 0).Value;
+            var menBottoms = Category.Create("Bottoms", "Lower wear for men", men, 1).Value;
+            var menOuterwear = Category.Create("Outerwear", "Jackets & coats", men, 2).Value;
 
-            // 1.2.1 Grandchild: Beer (Inactive because parent is inactive)
-            var beer = Category.Create("Beer", "Domestic and Imported", alcohol, 1, null, null).Value;
-            beer.Deactivate(); // Domain logic in 'alcohol.Deactivate()' usually handles this, but during seed we might need manual calls depending on order
-            _dbContext.Categories.Add(beer);
+            _dbContext.Categories.AddRange(menTops, menBottoms, menOuterwear);
 
-            // 2. Root: Fresh Produce (Active, Order 0 - Should appear first in sort)
-            var produceResult = Category.Create("Fresh Produce", "Fruits and Veggies", null, 0, "leaf-icon", "#00FF00");
-            var produce = produceResult.Value;
-            _dbContext.Categories.Add(produce);
+            _dbContext.Categories.AddRange(
+                Category.Create("T-Shirts", "Casual t-shirts", menTops, 0).Value,
+                Category.Create("Shirts", "Formal & casual shirts", menTops, 1).Value,
+                Category.Create("Polo Shirts", "Collared casual wear", menTops, 2).Value,
 
-            // 2.1 Child: Fruits
-            var fruitsResult = Category.Create("Fruits", "Fresh fruits", produce, 1, null, null);
-            var fruits = fruitsResult.Value;
-            _dbContext.Categories.Add(fruits);
+                Category.Create("Jeans", "Denim wear", menBottoms, 0).Value,
+                Category.Create("Trousers", "Formal trousers", menBottoms, 1).Value,
+                Category.Create("Shorts", "Casual shorts", menBottoms, 2).Value
+            );
 
-            // 2.1.1 Grandchild: Tropical
-            var tropical = Category.Create("Tropical", "Bananas, Pineapples", fruits, 1, null, null).Value;
-            _dbContext.Categories.Add(tropical);
+            // ========== WOMEN ==========
+            var womenTops = Category.Create("Tops", "Upper wear for women", women, 0).Value;
+            var womenBottoms = Category.Create("Bottoms", "Lower wear for women", women, 1).Value;
+            var dresses = Category.Create("Dresses", "All types of dresses", women, 2).Value;
 
-            // 2.1.2 Grandchild: Berries
-            var berries = Category.Create("Berries", "Strawberries, Blueberries", fruits, 2, null, null).Value;
-            _dbContext.Categories.Add(berries);
+            _dbContext.Categories.AddRange(womenTops, womenBottoms, dresses);
 
-            // 2.2 Child: Vegetables
-            var veg = Category.Create("Vegetables", "Roots and greens", produce, 2, null, null).Value;
-            _dbContext.Categories.Add(veg);
+            _dbContext.Categories.AddRange(
+                Category.Create("Blouses", "Formal & casual blouses", womenTops, 0).Value,
+                Category.Create("T-Shirts", "Casual t-shirts", womenTops, 1).Value,
 
-            // 3. Root: Bakery (Active, Order 2)
-            var bakery = Category.Create("Bakery", "Fresh bread daily", null, 2, "bread-icon", "#FFA500").Value;
-            _dbContext.Categories.Add(bakery);
+                Category.Create("Casual Dresses", "Everyday dresses", dresses, 0).Value,
+                Category.Create("Party Dresses", "Evening & party wear", dresses, 1).Value
+            );
+
+            // ========== KIDS ==========
+            var boys = Category.Create("Boys", "Clothing for boys", kids, 0).Value;
+            var girls = Category.Create("Girls", "Clothing for girls", kids, 1).Value;
+
+            _dbContext.Categories.AddRange(boys, girls);
+
+            _dbContext.Categories.AddRange(
+                Category.Create("Tops", "T-shirts & shirts", boys, 0).Value,
+                Category.Create("Bottoms", "Jeans & shorts", boys, 1).Value,
+
+                Category.Create("Tops", "T-shirts & blouses", girls, 0).Value,
+                Category.Create("Bottoms", "Skirts & leggings", girls, 1).Value
+            );
+
+            // ========== ACCESSORIES ==========
+            var footwear = Category.Create("Footwear", "Shoes & sandals", accessories, 0).Value;
+            var bags = Category.Create("Bags", "Handbags & backpacks", accessories, 1).Value;
+
+            _dbContext.Categories.AddRange(footwear, bags);
+
+            _dbContext.Categories.AddRange(
+                Category.Create("Sneakers", "Casual shoes", footwear, 0).Value,
+                Category.Create("Sandals", "Open footwear", footwear, 1).Value
+            );
 
             await _dbContext.SaveChangesAsync();
         }
+
     }
 }
