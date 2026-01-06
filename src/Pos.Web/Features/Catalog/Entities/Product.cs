@@ -119,7 +119,13 @@ namespace Pos.Web.Features.Catalog.Entities
 
         public void Activate() => IsActive = true;
 
-        public void Deactivate() => IsActive = false;
+        public void Deactivate()
+        {
+            foreach(var variant in _varients)
+               variant.Deactivate();
+
+            IsActive = false;
+        }
 
         // --- Behaviors ---
         public Result<ProductVariant> AddVarient(
@@ -178,6 +184,9 @@ namespace Pos.Web.Features.Catalog.Entities
 
         public Result ActivateVarient(Guid variantId)
         {
+            if(!IsActive)
+                return Result.Failure(Error.NotFound("Product.NotActive", "Cannot activate a product variant when the product is inactive."));
+
             var variant = _varients.FirstOrDefault(v => v.Id == variantId);
             if (variant is null)
                 return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
