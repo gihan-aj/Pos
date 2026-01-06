@@ -90,7 +90,7 @@ namespace Pos.Web.Features.Catalog.Entities
                 sku,
                 brand,
                 material,
-                gender,
+                gender ?? Entities.Gender.Unspecified,
                 basePrice,
                 tags ?? new List<string>());
 
@@ -103,7 +103,7 @@ namespace Pos.Web.Features.Catalog.Entities
             Guid categoryId,
             string? brand,
             string? material,
-            Gender gender,
+            Gender? gender,
             decimal basePrice,
             List<string> tags)
         {
@@ -112,7 +112,7 @@ namespace Pos.Web.Features.Catalog.Entities
             CategoryId = categoryId;
             Brand = brand;
             Material = material;
-            Gender = gender;
+            Gender = gender ?? Entities.Gender.Unspecified;
             BasePrice = basePrice;
             Tags = tags;
         }
