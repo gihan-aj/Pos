@@ -18,7 +18,7 @@ namespace Pos.Web.Features.Catalog.Products.AddProductVariant
         public async Task<Result> Handle(AddProductVariantCommand command, CancellationToken cancellationToken)
         {
             var product = await _dbContext.Products
-                .Include(p => p.Varients)
+                .Include(p => p.Variants)
                 .FirstOrDefaultAsync(p => p.Id == command.ProductId, cancellationToken);
 
             if(product is null)

@@ -59,8 +59,8 @@ namespace Pos.Web.Features.Catalog.Entities
         // Navigation
         public Category? Category { get; private set; }
 
-        private readonly List<ProductVariant> _varients = new();
-        public IReadOnlyCollection<ProductVariant> Varients => _varients.AsReadOnly();
+        private readonly List<ProductVariant> _variants = new();
+        public IReadOnlyCollection<ProductVariant> Variants => _variants.AsReadOnly();
 
         private readonly List<ProductImage> _images = new();
         public IReadOnlyCollection<ProductImage> Images => _images.AsReadOnly();
@@ -121,7 +121,7 @@ namespace Pos.Web.Features.Catalog.Entities
 
         public void Deactivate()
         {
-            foreach(var variant in _varients)
+            foreach(var variant in _variants)
                variant.Deactivate();
 
             IsActive = false;
@@ -136,26 +136,26 @@ namespace Pos.Web.Features.Catalog.Entities
             decimal? cost = null, 
             int stockQuantity = 0)
         {
-            if(_varients.Any(v => v.Sku == sku))
+            if(_variants.Any(v => v.Sku == sku))
                 return Result.Failure<ProductVariant>(Error.Conflict("Variant.DuplicateSku", $"Variant with SKU '{sku}' already exists."));
 
-            if(_varients.Any(v => v.Size == size && v.Color == color))
+            if(_variants.Any(v => v.Size == size && v.Color == color))
                 return Result.Failure<ProductVariant>(Error.Conflict("Variant.DuplicateCombo", $"Variant with Size '{size}' and Color '{color}' already exists."));
 
             var varient = new ProductVariant(Id, sku, size, color, priceOverride, cost, stockQuantity);
-            _varients.Add(varient);
+            _variants.Add(varient);
 
             return varient;
         }
 
         public Result RemoveVariant(Guid variantId)
         {
-            var variant = _varients.FirstOrDefault(v => v.Id == variantId);
+            var variant = _variants.FirstOrDefault(v => v.Id == variantId);
             if(variant is null)
                 return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
 
             // Bolck if quantity > 0 ??
-            _varients.Remove(variant);
+            _variants.Remove(variant);
 
             return Result.Success();
         }
@@ -169,11 +169,11 @@ namespace Pos.Web.Features.Catalog.Entities
             decimal? cost,
             int stockQuantity)
         {
-            var variant = _varients.FirstOrDefault(v => v.Id == variantId);
+            var variant = _variants.FirstOrDefault(v => v.Id == variantId);
             if (variant is null)
                 return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
 
-            bool isDuplicate = _varients.Any(v => v.Id != variantId && (v.Sku == sku || (v.Color == color && v.Size == size)));
+            bool isDuplicate = _variants.Any(v => v.Id != variantId && (v.Sku == sku || (v.Color == color && v.Size == size)));
             if (isDuplicate)
                 return Result.Failure(Error.Conflict("Variant.Duplicate", "Another variant with this SKU or Size/Color combination already exists."));
 
@@ -187,7 +187,7 @@ namespace Pos.Web.Features.Catalog.Entities
             if(!IsActive)
                 return Result.Failure(Error.NotFound("Product.NotActive", "Cannot activate a product variant when the product is inactive."));
 
-            var variant = _varients.FirstOrDefault(v => v.Id == variantId);
+            var variant = _variants.FirstOrDefault(v => v.Id == variantId);
             if (variant is null)
                 return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
 
@@ -197,7 +197,7 @@ namespace Pos.Web.Features.Catalog.Entities
         
         public Result DeactivateVarient(Guid variantId)
         {
-            var variant = _varients.FirstOrDefault(v => v.Id == variantId);
+            var variant = _variants.FirstOrDefault(v => v.Id == variantId);
             if (variant is null)
                 return Result.Failure(Error.NotFound("Variant.NotFound", "Variant not found."));
 

@@ -33,6 +33,9 @@ namespace Pos.Web.Features.Catalog.Entities
             builder.Property(c => c.Color)
                 .HasMaxLength(9); // Matches hex codes (e.g., #RRGGBBAA)
 
+            builder.Property(p => p.CreatedBy).HasMaxLength(36);
+            builder.Property(p => p.ModifiedBy).HasMaxLength(36).IsRequired(false);
+
             // Self-referencing relationship
             builder.HasOne(c => c.ParentCategory)
                 .WithMany(c => c.SubCategories)

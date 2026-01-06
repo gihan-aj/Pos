@@ -1,7 +1,9 @@
-﻿using Pos.Web.Features.Catalog.Products.ActivateProductVariant;
+﻿using Pos.Web.Features.Catalog.Products.ActivateProduct;
+using Pos.Web.Features.Catalog.Products.ActivateProductVariant;
 using Pos.Web.Features.Catalog.Products.AddProductImage;
 using Pos.Web.Features.Catalog.Products.AddProductVariant;
 using Pos.Web.Features.Catalog.Products.CreateProduct;
+using Pos.Web.Features.Catalog.Products.DeactivateProduct;
 using Pos.Web.Features.Catalog.Products.DeactivateProductVariant;
 using Pos.Web.Features.Catalog.Products.RemoveProductImage;
 using Pos.Web.Features.Catalog.Products.RemoveProductVariant;
@@ -20,6 +22,8 @@ namespace Pos.Web.Features.Catalog.Products
 
             group.MapCreateProduct();
             group.MapUpdateProduct();
+            group.MapActivateProduct();
+            group.MapDeactivateProduct();
 
             group.MapAddProductVariant();
             group.MapUpdateProductVariant();

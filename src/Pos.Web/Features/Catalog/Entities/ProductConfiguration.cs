@@ -15,6 +15,10 @@ namespace Pos.Web.Features.Catalog.Entities
             builder.Property(p => p.Sku).HasMaxLength(50).IsRequired(false);
             builder.HasIndex(p => p.Sku).IsUnique().HasFilter("[Sku] IS NOT NULL"); // Unique if present
 
+            builder.Property(p => p.Description).HasMaxLength(500).IsRequired(false);
+            builder.Property(p => p.Brand).HasMaxLength(50).IsRequired(false);
+            builder.Property(p => p.Material).HasMaxLength(50).IsRequired(false);
+
             builder.Property(p => p.BasePrice).HasPrecision(18, 2);
 
             // Comparer logic
@@ -33,6 +37,9 @@ namespace Pos.Web.Features.Catalog.Entities
 
             builder.Property(p => p.Tags).HasMaxLength(2000);
 
+            builder.Property(p => p.CreatedBy).HasMaxLength(36);
+            builder.Property(p => p.ModifiedBy).HasMaxLength(36).IsRequired(false);
+
             // Relationships
             builder.HasOne(p => p.Category)
                 .WithMany()
@@ -40,9 +47,9 @@ namespace Pos.Web.Features.Catalog.Entities
                 .OnDelete(DeleteBehavior.Restrict);
 
             // --- VARIENTS ---
-            builder.OwnsMany(p => p.Varients, vb =>
+            builder.OwnsMany(p => p.Variants, vb =>
             {
-                vb.ToTable("ProductVarients");
+                vb.ToTable("ProductVariants");
                 vb.Property(v => v.Id).ValueGeneratedNever();
                 vb.HasKey(p => p.Id);
                 vb.WithOwner().HasForeignKey(v => v.ProductId);
@@ -57,6 +64,9 @@ namespace Pos.Web.Features.Catalog.Entities
                 vb.Property(v => v.Cost).HasPrecision(18, 2);
 
                 vb.Property(v => v.IsActive).IsRequired().HasDefaultValue(true);
+
+                builder.Property(v => v.CreatedBy).HasMaxLength(36);
+                builder.Property(v => v.ModifiedBy).HasMaxLength(36).IsRequired(false);
             });
 
             // --- IMAGES ---

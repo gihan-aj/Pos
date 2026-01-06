@@ -17,7 +17,7 @@ namespace Pos.Web.Features.Catalog.Products.DeactivateProduct
         public async Task<Result> Handle(DeactivateProductCommand command, CancellationToken cancellationToken)
         {
             var product = await _dbContext.Products
-                .Include(p => p.Varients)
+                .Include(p => p.Variants)
                 .FirstOrDefaultAsync(p => p.Id == command.Id, cancellationToken);
 
             if (product is null)
