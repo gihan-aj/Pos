@@ -5,6 +5,7 @@ using Pos.Web.Features.Catalog.Products.AddProductVariant;
 using Pos.Web.Features.Catalog.Products.CreateProduct;
 using Pos.Web.Features.Catalog.Products.DeactivateProduct;
 using Pos.Web.Features.Catalog.Products.DeactivateProductVariant;
+using Pos.Web.Features.Catalog.Products.GetInventory;
 using Pos.Web.Features.Catalog.Products.GetProduct;
 using Pos.Web.Features.Catalog.Products.GetProductList;
 using Pos.Web.Features.Catalog.Products.GetProductVariant;
@@ -36,6 +37,7 @@ namespace Pos.Web.Features.Catalog.Products
             group.MapActivateProductVariant();
             group.MapDeactivateProductVariant();
             group.MapGetProductVariant();
+            group.MapGetInventory();
 
             group.MapAddProductImage();
             group.MapSetPrimaryProductImage();
