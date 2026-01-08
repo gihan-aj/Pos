@@ -49,7 +49,7 @@ namespace Pos.Web.Features.Catalog.Categories.GetCategoryTree
 
             var lookUp = categories.ToDictionary(
                 c => c.Id,
-                c => new CategoryTreeItem(c.Id, c.Name, c.IsActive, c.DisplayOrder, new List<CategoryTreeItem>()));
+                c => new CategoryTreeItem(c.Id, c.Name, c.NamePath, c.IsActive, c.DisplayOrder, new List<CategoryTreeItem>()));
 
             var resultRoots = new List<CategoryTreeItem>();
             foreach(var cat in categories)

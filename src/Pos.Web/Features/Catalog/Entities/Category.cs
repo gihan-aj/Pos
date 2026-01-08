@@ -7,6 +7,7 @@ namespace Pos.Web.Features.Catalog.Entities
     {
         public const int MaxDepth = 2; // 0=Root, 1=Sub 2=SubSub
         public const char PathSeparator = '/';
+        public const string NameSeparator = " / ";
 
         private Category()
         {
@@ -16,6 +17,7 @@ namespace Pos.Web.Features.Catalog.Entities
             string name, 
             int level,
             string path,
+            string namePath,
             string? description = null, 
             Guid? parentCategoryId = null,
             int displayOrder = 0,
@@ -31,6 +33,7 @@ namespace Pos.Web.Features.Catalog.Entities
             Color = color;
             Level = level;
             Path = path;
+            NamePath = namePath;
             IsActive = true;
         }
 
@@ -49,6 +52,9 @@ namespace Pos.Web.Features.Catalog.Entities
 
         // Materialized Path: /RootId/ChildId/GrandChildId
         public string Path { get; private set; } = string.Empty;
+
+        // Breadcrumb: "Root / Child / GrandChild"
+        public string NamePath { get; private set; } = string.Empty;
 
         // Navigation properties
         public Category? ParentCategory { get; private set; }
@@ -71,6 +77,7 @@ namespace Pos.Web.Features.Catalog.Entities
             int level = 0;
             Guid? parentId = null;
             string parentPath = string.Empty;
+            string parentNamePath = string.Empty;
 
             if (parent is not null)
             {
@@ -82,6 +89,7 @@ namespace Pos.Web.Features.Catalog.Entities
                 level = parent.Level + 1;
                 parentId = parent.Id;
                 parentPath = parent.Path;
+                parentNamePath = parent.NamePath;
             }
 
             var id = Guid.NewGuid();
@@ -91,9 +99,12 @@ namespace Pos.Web.Features.Catalog.Entities
                 ? $"{PathSeparator}{id}{PathSeparator}"
                 : $"{parentPath}{id}{PathSeparator}";
 
-            var category = new Category(id, name, level, path, description, parentId, displayOrder, iconUrl, color);
+            var namePath = string.IsNullOrEmpty(parentPath)
+                ? name
+                : $"{parentNamePath}{NameSeparator}{name}";
 
-            // We could raise a domain event here if needed
+            var category = new Category(id, name, level, path, namePath, description, parentId, displayOrder, iconUrl, color);
+
             // category.RaiseDomainEvent(new CategoryCreatedEvent(category.Id));
 
             return Result.Success(category);
@@ -102,7 +113,21 @@ namespace Pos.Web.Features.Catalog.Entities
         // --- Behaviors ---
         public void UpdateDetails(string name, string? description, int displayOrder, string? iconUrl, string? color)
         {
-            // Simple validations can go here or in a Validator before calling this
+            if(Name != name)
+            {
+                if (!string.IsNullOrEmpty(NamePath))
+                {
+                    if (NamePath.EndsWith(Name))
+                    {
+                        NamePath = NamePath.Substring(0, NamePath.Length - Name.Length) + name;
+                    }
+                }
+                else
+                {
+                    NamePath = name;
+                }
+            }
+
             Name = name;
             Description = description;
             DisplayOrder = displayOrder;
@@ -139,17 +164,22 @@ namespace Pos.Web.Features.Catalog.Entities
                 ? $"{PathSeparator}{Id}{PathSeparator}"
                 : $"{newParentPath}{Id}{PathSeparator}";
 
+            var newParentNamePath = newParent?.NamePath ?? string.Empty;
+            NamePath = string.IsNullOrEmpty(newParentNamePath)
+                ? $"{Name}"
+                : $"{newParentNamePath}{NameSeparator}{Name}";
+
             // The Handler MUST load these children for this to work
             foreach (var child in _subCategories)
             {
-                var updatedResult = child.UpdatePathFromParent(Path, Level);
+                var updatedResult = child.UpdatePathFromParent(Path, NamePath, Level);
                 if (updatedResult.IsFailure) return updatedResult;
             }
 
             return Result.Success();
         }
 
-        internal Result UpdatePathFromParent(string parentPath, int parentLevel)
+        internal Result UpdatePathFromParent(string parentPath, string parentNamePath, int parentLevel)
         {
             var newLevel = parentLevel + 1;
             if (newLevel > MaxDepth)
@@ -158,11 +188,12 @@ namespace Pos.Web.Features.Catalog.Entities
             }
 
             Path = $"{parentPath}{Id}{PathSeparator}";
+            NamePath = $"{parentNamePath}{NameSeparator}{Name}";
             Level = newLevel;
 
             foreach (var child in _subCategories)
             {
-                var result = child.UpdatePathFromParent(Path, Level);
+                var result = child.UpdatePathFromParent(Path, NamePath, Level);
                 if (result.IsFailure)
                 {
                     return result;

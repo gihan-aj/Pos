@@ -91,6 +91,7 @@ namespace Pos.Web.Features.Catalog.Categories.GetCategoryList
             var projectedQuery = query.Select(c => new CategoryListItem(
                 c.Id,
                 c.Name,
+                c.NamePath,
                 c.Description,
                 c.IsActive,
                 c.Level,

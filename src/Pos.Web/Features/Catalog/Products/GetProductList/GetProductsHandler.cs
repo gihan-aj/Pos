@@ -79,7 +79,7 @@ namespace Pos.Web.Features.Catalog.Products.GetProductList
             var projectedQuery = query.Select(p => new ProductListItem(
                 p.Id,
                 p.Name,
-                p.Category != null ? p.Category.Name : "Unknown",
+                p.Category != null ? p.Category.NamePath : "Unknown",
                 p.Sku,
                 p.BasePrice,
                 p.Variants.Count,

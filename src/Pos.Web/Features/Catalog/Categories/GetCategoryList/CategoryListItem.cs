@@ -3,6 +3,7 @@
     public record CategoryListItem(
         Guid Id,
         string Name,
+        string Breadcrumb,
         string? Description,
         bool IsActive,
         int Level,

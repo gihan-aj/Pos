@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pos.Web.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateCatalogTables : Migration
+    public partial class AddCatalogTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,6 +25,7 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     Color = table.Column<string>(type: "nvarchar(9)", maxLength: 9, nullable: true),
                     Level = table.Column<int>(type: "int", nullable: false),
                     Path = table.Column<string>(type: "varchar(180)", unicode: false, maxLength: 180, nullable: false),
+                    NamePath = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
                     ModifiedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),

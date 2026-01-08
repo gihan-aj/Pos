@@ -12,8 +12,8 @@ using Pos.Web.Infrastructure.Persistence;
 namespace Pos.Web.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260106072237_CreateCatalogTables")]
-    partial class CreateCatalogTables
+    [Migration("20260108041726_AddCatalogTables")]
+    partial class AddCatalogTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -70,6 +70,11 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NamePath")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
                     b.Property<Guid?>("ParentCategoryId")
                         .HasColumnType("uniqueidentifier");
