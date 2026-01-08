@@ -6,7 +6,7 @@ namespace Pos.Web.Features.Catalog.Products.GetProductList
     {
         public Guid? CategoryId { get; init; }
         public bool IncludeSubCategories { get; init; } = true;
-        public string? Brand { get; init; }
         public bool? IsActive { get; init; }
+        public string? SearchIn { get; set; }
     }
 }

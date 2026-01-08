@@ -20,7 +20,7 @@ namespace Pos.Web.Features.Catalog.Products.GetProductList
             // --- FILTERING ---
 
             // Category Filter (Smart Tree Search)
-            if (request.CategoryId.HasValue)
+            if (request.CategoryId.HasValue && request.CategoryId.Value != Guid.Empty)
             {
                 if (request.IncludeSubCategories)
                 {
@@ -47,10 +47,10 @@ namespace Pos.Web.Features.Catalog.Products.GetProductList
             }
 
             // Brand
-            if (!string.IsNullOrWhiteSpace(request.Brand))
-            {
-                query = query.Where(p => p.Brand == request.Brand);
-            }
+            //if (!string.IsNullOrWhiteSpace(request.Brand))
+            //{
+            //    query = query.Where(p => p.Brand == request.Brand);
+            //}
 
             // Active
             if (request.IsActive.HasValue)
@@ -58,11 +58,35 @@ namespace Pos.Web.Features.Catalog.Products.GetProductList
                 query = query.Where(p => p.IsActive == request.IsActive.Value);
             }
 
-            // Search (Name or SKU)
+            // Search 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 var term = request.Search.Trim();
-                query = query.Where(p => p.Name.Contains(term) || (p.Sku != null && p.Sku.Contains(term)));
+                if (string.Equals(request.SearchIn, "name", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(p => p.Name.Contains(term));
+                }
+                else if (string.Equals(request.SearchIn, "description", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(p => p.Description != null && p.Description.Contains(term));
+                }
+                else if (string.Equals(request.SearchIn, "sku", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(p => p.Sku != null && p.Sku.Contains(term));
+                }
+                else if (string.Equals(request.SearchIn, "brand", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(p => p.Brand != null && p.Brand.Contains(term));
+                }
+                else if (string.Equals(request.SearchIn, "material", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(p => p.Material != null && p.Material.Contains(term));
+                }
+                else
+                {
+                    query = query.Where(p => p.Name.Contains(term) || (p.Sku != null && p.Sku.Contains(term)));
+                }
+                
             }
 
             // --- SORTING ---
