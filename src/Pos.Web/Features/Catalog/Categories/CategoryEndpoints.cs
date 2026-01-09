@@ -2,6 +2,7 @@
 using Pos.Web.Features.Catalog.Categories.CreateCategory;
 using Pos.Web.Features.Catalog.Categories.DeactivateCategory;
 using Pos.Web.Features.Catalog.Categories.DeleteCategory;
+using Pos.Web.Features.Catalog.Categories.GetAllCategories;
 using Pos.Web.Features.Catalog.Categories.GetCategory;
 using Pos.Web.Features.Catalog.Categories.GetCategoryList;
 using Pos.Web.Features.Catalog.Categories.GetCategoryTree;
@@ -24,6 +25,7 @@ namespace Pos.Web.Features.Catalog.Categories
             group.MapGetCategoryList();
             group.MapGetCategoryTree();
             group.MapUpdateCategory();
+            group.MapGetAllCategories();
         }
     }
 }
