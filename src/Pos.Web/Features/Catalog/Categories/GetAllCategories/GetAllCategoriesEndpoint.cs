@@ -17,7 +17,7 @@ namespace Pos.Web.Features.Catalog.Categories.GetAllCategories
                     : result.ToProblemDetails();
             })
             .WithName("GetAllCategories")
-            .WithSummary("Get summery details of all active categories")
+            .WithSummary("Get summary details of all active categories")
             .Produces(200, typeof(List<CategorySummaryItem>));
         }
     }

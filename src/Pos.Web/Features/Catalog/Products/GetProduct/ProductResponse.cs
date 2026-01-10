@@ -1,4 +1,6 @@
-﻿namespace Pos.Web.Features.Catalog.Products.GetProduct
+﻿using Pos.Web.Features.Catalog.Entities;
+
+namespace Pos.Web.Features.Catalog.Products.GetProduct
 {
     public record ProductResponse(
         Guid Id,
@@ -9,7 +11,7 @@
         string Sku,
         string? Brand,
         string? Material,
-        string? Gender,
+        Gender? Gender,
         decimal BasePrice,
         List<string> Tags,
         bool IsActive,

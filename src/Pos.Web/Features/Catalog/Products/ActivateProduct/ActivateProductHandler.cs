@@ -25,7 +25,7 @@ namespace Pos.Web.Features.Catalog.Products.ActivateProduct
             var isCategoryActive = await _dbContext.Categories
                 .AnyAsync(p => p.Id == product.CategoryId && p.IsActive, cancellationToken);
 
-            if (isCategoryActive)
+            if (!isCategoryActive)
                 return Result.Failure(Error.Conflict("Category.NotActive", "Cannot activate a product when the category is inactive."));
 
             product.Activate();

@@ -35,7 +35,7 @@ namespace Pos.Web.Features.Catalog.Products.GetProduct
                 product.Sku ?? "",
                 product.Brand,
                 product.Material,
-                product.Gender.ToString(),
+                product.Gender,
                 product.BasePrice,
                 product.Tags,
                 product.IsActive,
