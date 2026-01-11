@@ -36,10 +36,11 @@ namespace Pos.Web.Shared.Extensions
                     );
             }
 
-            return new Dictionary<string, string[]>
-            {
-                { result.Error.Code, new[] { result.Error.Description } }
-            };
+            //return new Dictionary<string, string[]>
+            //{
+            //    { result.Error.Code, new[] { result.Error.Description } }
+            //};
+            return new Dictionary<string, string[]>();
         }
 
         private static int GetStatusCode(ErrorType errorType) =>
