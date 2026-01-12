@@ -12,6 +12,8 @@ namespace Pos.Web.Features.Catalog.Products.CreateProduct
         Gender? Gender,
         decimal BasePrice,
         List<string>? Tags,
-        string? SkuOverride // If Null auto generate
+        string? Sku, // If Null auto generate
+        List<CreateProductVariantDto> Variants,
+        List<CreateProductImageDto> Images
     ) : ICommand<Guid>;
 }
