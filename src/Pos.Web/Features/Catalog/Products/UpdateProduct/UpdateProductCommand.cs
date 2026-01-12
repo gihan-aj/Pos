@@ -12,5 +12,7 @@ namespace Pos.Web.Features.Catalog.Products.UpdateProduct
         string? Material,
         Gender? Gender,
         decimal BasePrice,
-        List<string> Tags) : ICommand;
+        List<string> Tags,
+        List<ProductVariantDto> Variants,
+        List<ProductImageDto> Images) : ICommand;
 }

@@ -16,7 +16,7 @@ namespace Pos.Web.Features.Catalog.Products.UpdateProduct
                 return result.IsSuccess ? Results.Ok() : result.ToProblemDetails();
             })
                 .WithName("UpdateProduct")
-                .WithSummary("Updates product main details")
+                .WithSummary("Updates all product details")
                 .Produces(200)
                 .ProducesProblem(400)
                 .ProducesProblem(404);
