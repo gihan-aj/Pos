@@ -22,18 +22,18 @@ namespace Pos.Web.Features.Catalog.Entities
             builder.Property(p => p.BasePrice).HasPrecision(18, 2);
 
             // Comparer logic
-            var tagComparer = new ValueComparer<List<string>>(
-                (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2), // how to compare
-                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), // how to hash
-                c => c.ToList()); // How to snapshot (deep copy)
+            //var tagComparer = new ValueComparer<List<string>>(
+            //    (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2), // how to compare
+            //    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), // how to hash
+            //    c => c.ToList()); // How to snapshot (deep copy)
 
-            // Tags: Store as JSON string in SQL Server
-            builder.Property(p => p.Tags)
-                .HasConversion(
-                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
-                )
-                .Metadata.SetValueComparer(tagComparer);
+            //// Tags: Store as JSON string in SQL Server
+            //builder.Property(p => p.Tags)
+            //    .HasConversion(
+            //        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+            //        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
+            //    )
+            //    .Metadata.SetValueComparer(tagComparer);
 
             builder.Property(p => p.Tags).HasMaxLength(2000);
 

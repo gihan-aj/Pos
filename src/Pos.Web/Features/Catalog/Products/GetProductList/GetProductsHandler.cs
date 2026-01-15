@@ -82,9 +82,16 @@ namespace Pos.Web.Features.Catalog.Products.GetProductList
                 {
                     query = query.Where(p => p.Material != null && p.Material.Contains(term));
                 }
+                else if (string.Equals(request.SearchIn, "tags", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(p => p.Tags != null && p.Tags.Any(tag => tag.Contains(term)));
+                }
                 else
                 {
-                    query = query.Where(p => p.Name.Contains(term) || (p.Sku != null && p.Sku.Contains(term)));
+                    query = query.Where(p => 
+                        p.Name.Contains(term) 
+                        || (p.Sku != null && p.Sku.Contains(term))
+                        || p.Tags != null && p.Tags.Any(tag => tag.Contains(term)));
                 }
                 
             }
