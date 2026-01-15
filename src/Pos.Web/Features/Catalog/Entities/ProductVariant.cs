@@ -65,8 +65,16 @@ namespace Pos.Web.Features.Catalog.Entities
             IsAvailable = StockQuantity > 0 && IsActive;
         }
 
-        internal void Activate() => IsActive = true;
+        internal void Activate()
+        {
+            IsActive = true;
+            IsAvailable = StockQuantity > 0;
+        }
 
-        internal void Deactivate() => IsActive = false;
+        internal void Deactivate()
+        {
+            IsActive = false;
+            IsAvailable = false;
+        }
     }
 }
