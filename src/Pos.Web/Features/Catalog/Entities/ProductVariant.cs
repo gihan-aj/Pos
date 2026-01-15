@@ -14,7 +14,8 @@ namespace Pos.Web.Features.Catalog.Entities
             string color,
             decimal? price,
             decimal? cost,
-            int stockQuantity)
+            int stockQuantity,
+            bool isActive = true)
         {
             Id = Guid.NewGuid();
             ProductId = productId;
@@ -24,8 +25,8 @@ namespace Pos.Web.Features.Catalog.Entities
             Price = price;
             Cost = cost;
             StockQuantity = stockQuantity;
-            IsAvailable = stockQuantity > 0;
-            IsActive = true;
+            IsAvailable = stockQuantity > 0 && isActive;
+            IsActive = isActive;
         }
 
         public Guid ProductId { get; private set; }
@@ -61,7 +62,7 @@ namespace Pos.Web.Features.Catalog.Entities
             Price = price;
             Cost = cost;
             StockQuantity = stockQuantity;
-            IsAvailable = StockQuantity > 0;
+            IsAvailable = StockQuantity > 0 && IsActive;
         }
 
         internal void Activate() => IsActive = true;

@@ -32,6 +32,7 @@ namespace Pos.Web.Features.Catalog.Products.GetProduct
                 product.Description,
                 product.CategoryId,
                 product.Category?.Name ?? "Unknown",
+                product.Category?.NamePath ?? "Unknown",
                 product.Sku ?? "",
                 product.Brand,
                 product.Material,
@@ -39,6 +40,9 @@ namespace Pos.Web.Features.Catalog.Products.GetProduct
                 product.BasePrice,
                 product.Tags,
                 product.IsActive,
+                product.Variants.Any(v => v.IsAvailable),
+                product.Images.FirstOrDefault(v => v.IsPrimary)?.ImageUrl ?? null,
+                product.Images.Where(i => !i.IsPrimary).Select(i => i.ImageUrl).ToList(),
                 product.Variants.Select(v => new ProductVariantDto(
                     v.Id,
                     v.Sku,

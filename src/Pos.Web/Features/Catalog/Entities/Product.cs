@@ -142,7 +142,7 @@ namespace Pos.Web.Features.Catalog.Entities
             if(_variants.Any(v => v.Size == size && v.Color == color))
                 return Result.Failure<ProductVariant>(Error.Conflict("Variant.DuplicateCombo", $"Variant with Size '{size}' and Color '{color}' already exists."));
 
-            var varient = new ProductVariant(Id, sku, size, color, priceOverride, cost, stockQuantity);
+            var varient = new ProductVariant(Id, sku, size, color, priceOverride, cost, stockQuantity, IsActive);
             _variants.Add(varient);
 
             return varient;

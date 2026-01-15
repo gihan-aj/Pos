@@ -8,6 +8,7 @@ namespace Pos.Web.Features.Catalog.Products.GetProduct
         string? Description,
         Guid CategoryId,
         string CategoryName,
+        string CategoryPath,
         string Sku,
         string? Brand,
         string? Material,
@@ -15,6 +16,9 @@ namespace Pos.Web.Features.Catalog.Products.GetProduct
         decimal BasePrice,
         List<string> Tags,
         bool IsActive,
+        bool IsAvailable,
+        string? PrimaryImageUrl,
+        List<string>? SecondaryImageUrls,
         List<ProductVariantDto> Variants,
         List<ProductImageDto> Images
     );
