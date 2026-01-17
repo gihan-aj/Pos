@@ -113,7 +113,9 @@ namespace Pos.Web.Features.Catalog.Products.GetProductList
                 p.Category != null ? p.Category.NamePath : "Unknown",
                 p.Sku,
                 p.BasePrice,
+                p.Variants.Where(v => v.IsActive).Count(),
                 p.Variants.Count,
+                p.Variants.Where(v => v.IsActive).Sum(v => v.StockQuantity),
                 p.Variants.Sum(v => v.StockQuantity), // Aggregated Stock
                 p.Images.Where(i => i.IsPrimary).Select(i => i.ImageUrl).FirstOrDefault(),
                 p.IsActive

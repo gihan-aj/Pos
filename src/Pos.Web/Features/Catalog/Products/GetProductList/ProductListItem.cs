@@ -6,7 +6,9 @@
         string CategoryName,
         string? Sku,
         decimal BasePrice,
+        int ActiveVariantCount,
         int VariantCount,
+        int ActiveStock,
         int TotalStock,
         string? PrimaryImageUrl,
         bool IsActive
