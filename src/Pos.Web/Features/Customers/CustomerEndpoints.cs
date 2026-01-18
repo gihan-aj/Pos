@@ -1,4 +1,5 @@
 ﻿using Pos.Web.Features.Customers.CreateCustomer;
+using Pos.Web.Features.Customers.UpdateCustomer;
 
 namespace Pos.Web.Features.Customers
 {
@@ -10,6 +11,7 @@ namespace Pos.Web.Features.Customers
                 .WithTags("Customers");
 
             group.MapCreateCustomer();
+            group.MapUpdateCustomer();
         }
     }
 }
