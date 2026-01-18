@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Pos.Web.Features.Catalog.Entities
@@ -21,20 +19,6 @@ namespace Pos.Web.Features.Catalog.Entities
 
             builder.Property(p => p.BasePrice).HasPrecision(18, 2);
 
-            // Comparer logic
-            //var tagComparer = new ValueComparer<List<string>>(
-            //    (c1, c2) => c1 != null && c2 != null && c1.SequenceEqual(c2), // how to compare
-            //    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), // how to hash
-            //    c => c.ToList()); // How to snapshot (deep copy)
-
-            //// Tags: Store as JSON string in SQL Server
-            //builder.Property(p => p.Tags)
-            //    .HasConversion(
-            //        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-            //        v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
-            //    )
-            //    .Metadata.SetValueComparer(tagComparer);
-
             builder.Property(p => p.Tags).HasMaxLength(2000);
 
             builder.Property(p => p.CreatedBy).HasMaxLength(36);
@@ -47,27 +31,27 @@ namespace Pos.Web.Features.Catalog.Entities
                 .OnDelete(DeleteBehavior.Restrict);
 
             // --- VARIENTS ---
-            builder.OwnsMany(p => p.Variants, vb =>
-            {
-                vb.ToTable("ProductVariants");
-                vb.Property(v => v.Id).ValueGeneratedNever();
-                vb.HasKey(p => p.Id);
-                vb.WithOwner().HasForeignKey(v => v.ProductId);
+            //builder.OwnsMany(p => p.Variants, vb =>
+            //{
+            //    vb.ToTable("ProductVariants");
+            //    vb.Property(v => v.Id).ValueGeneratedNever();
+            //    vb.HasKey(p => p.Id);
+            //    vb.WithOwner().HasForeignKey(v => v.ProductId);
 
-                vb.Property(v => v.Sku).HasMaxLength(50).IsRequired();
-                vb.HasIndex(v => v.Sku).IsUnique();
+            //    vb.Property(v => v.Sku).HasMaxLength(50).IsRequired();
+            //    vb.HasIndex(v => v.Sku).IsUnique();
 
-                vb.Property(v => v.Size).HasMaxLength(20);
-                vb.Property(v => v.Color).HasMaxLength(30);
+            //    vb.Property(v => v.Size).HasMaxLength(20);
+            //    vb.Property(v => v.Color).HasMaxLength(30);
 
-                vb.Property(v => v.Price).HasPrecision(18, 2);
-                vb.Property(v => v.Cost).HasPrecision(18, 2);
+            //    vb.Property(v => v.Price).HasPrecision(18, 2);
+            //    vb.Property(v => v.Cost).HasPrecision(18, 2);
 
-                vb.Property(v => v.IsActive).IsRequired().HasDefaultValue(true);
+            //    vb.Property(v => v.IsActive).IsRequired().HasDefaultValue(true);
 
-                vb.Property(v => v.CreatedBy).HasMaxLength(36);
-                vb.Property(v => v.ModifiedBy).HasMaxLength(36).IsRequired(false);
-            });
+            //    vb.Property(v => v.CreatedBy).HasMaxLength(36);
+            //    vb.Property(v => v.ModifiedBy).HasMaxLength(36).IsRequired(false);
+            //});
 
             // --- IMAGES ---
             builder.OwnsMany(p => p.Images, ib =>

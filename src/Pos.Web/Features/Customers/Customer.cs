@@ -1,4 +1,5 @@
-﻿using Pos.Web.Shared.Abstractions;
+﻿using Pos.Web.Features.Orders.Entities;
+using Pos.Web.Shared.Abstractions;
 using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Customers
@@ -50,6 +51,9 @@ namespace Pos.Web.Features.Customers
         public string? Notes { get; private set; }
 
         public bool IsActive { get; private set; } = true;
+
+        private readonly List<Order> _orders = new List<Order>();
+        public IReadOnlyCollection<Order> Orders => _orders.AsReadOnly();
 
         public static Result<Customer> Create(
             string name,

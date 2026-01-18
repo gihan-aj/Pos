@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Pos.Web.Shared.Abstractions;
+using Pos.Web.Shared.Extensions;
 
 namespace Pos.Web.Features.Customers.GetCustomerList
 {

@@ -30,6 +30,7 @@ namespace Pos.Web.Features.Catalog.Entities
         }
 
         public Guid ProductId { get; private set; }
+        public Product? Product { get; private set; }
         public string Sku { get; private set; } = string.Empty;
         public string Size { get; private set; } = string.Empty; // S,M,L,XL
         public string Color { get; private set; } = string.Empty;
@@ -44,7 +45,7 @@ namespace Pos.Web.Features.Catalog.Entities
         public Result<int> AdjustStock(int quantityDelta)
         {
             int newStock = StockQuantity + quantityDelta;
-            if (newStock > 0)
+            if (newStock < 0)
                 return Result.Failure<int>(Error.Conflict("ProductVarient.InvalidStock", "Stock cannot be negative."));
 
             StockQuantity = newStock;

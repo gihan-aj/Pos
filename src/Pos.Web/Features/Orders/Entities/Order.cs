@@ -75,10 +75,10 @@ namespace Pos.Web.Features.Orders.Entities
             decimal shippingFee = 0)
         {
             if(customerId == Guid.Empty)
-                return Result.Failure<Order>(new Shared.Errors.Error("InvalidCustomerId", "Customer ID cannot be empty.", Shared.Errors.ErrorType.Validation));
+                return Result.Failure<Order>(new Shared.Errors.Error("Order.InvalidCustomerId", "Customer ID cannot be empty.", Shared.Errors.ErrorType.Validation));
 
-            if(string.IsNullOrEmpty(deliveryAddress))
-                return Result.Failure<Order>(new Shared.Errors.Error("InvalidOrderNumber", "Order number cannot be empty.", Shared.Errors.ErrorType.Validation));
+            if(string.IsNullOrEmpty(orderNumber))
+                return Result.Failure<Order>(new Shared.Errors.Error("Order.InvalidOrderNumber", "Order number cannot be empty.", Shared.Errors.ErrorType.Validation));
 
             return new Order(
                 customerId,

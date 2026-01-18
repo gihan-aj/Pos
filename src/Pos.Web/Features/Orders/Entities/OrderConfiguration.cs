@@ -42,8 +42,8 @@ namespace Pos.Web.Features.Orders.Entities
             builder.Property(o => o.CreatedBy).HasMaxLength(36);
             builder.Property(o => o.ModifiedBy).HasMaxLength(36).IsRequired(false);
 
-            builder.HasOne<Customer>()
-                .WithMany()
+            builder.HasOne(o => o.Customer)
+                .WithMany(c => c.Orders)
                 .HasForeignKey(o => o.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
