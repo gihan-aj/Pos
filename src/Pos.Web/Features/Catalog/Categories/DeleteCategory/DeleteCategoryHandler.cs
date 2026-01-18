@@ -22,10 +22,9 @@ namespace Pos.Web.Features.Catalog.Categories.DeleteCategory
             if (hasChildren)
                 return Result.Failure(Error.Conflict("Category.HasChildren", "Cannot delete a category that has sub-categories."));
 
-            // CHECK FOR PRODUCTS TOO...
-            // var hasProducts = await _dbContext.Products.AnyAsync(p => p.CategoryId == command.Id, ct);
-            // if (hasProducts)
-            //    return Result.Failure(Error.Conflict("Category.HasProducts", "Cannot delete a category that contains products."));
+            var hasProducts = await _dbContext.Products.AnyAsync(p => p.CategoryId == command.Id, cancellationToken);
+            if (hasProducts)
+                return Result.Failure(Error.Conflict("Category.HasProducts", "Cannot delete a category that contains products."));
 
             var category = await _dbContext.Categories
                 .FindAsync([command.Id], cancellationToken);

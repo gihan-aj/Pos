@@ -9,7 +9,7 @@ namespace Pos.Web.Features.Customers.ActivateCustomer
         {
             group.MapPost("/{id}/activate", async (Guid id, ISender mediator, CancellationToken cancellationToken = default) =>
             {
-                var result = await mediator.Send(new ActivateCustomerCommand(id));
+                var result = await mediator.Send(new ActivateCustomerCommand(id), cancellationToken);
                 return result.IsSuccess
                     ? Results.NoContent()
                     : result.ToProblemDetails();
