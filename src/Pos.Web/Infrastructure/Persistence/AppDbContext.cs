@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pos.Web.Features.Catalog.Entities;
+using Pos.Web.Features.Customers;
 
 namespace Pos.Web.Infrastructure.Persistence
 {
@@ -12,6 +13,7 @@ namespace Pos.Web.Infrastructure.Persistence
 
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Customer> Customers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

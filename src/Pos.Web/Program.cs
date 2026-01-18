@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pos.Web.Features.Catalog.Categories;
 using Pos.Web.Features.Catalog.Products;
+using Pos.Web.Features.Customers;
 using Pos.Web.Infrastructure;
 using Pos.Web.Infrastructure.Behaviors;
 using Pos.Web.Infrastructure.Persistence;
@@ -97,5 +98,6 @@ using (var scope = app.Services.CreateScope())
 
 app.MapCategoryEndpoints();
 app.MapProductEndpoints();
+app.MapCustomerEndpoints();
 
 app.Run();
