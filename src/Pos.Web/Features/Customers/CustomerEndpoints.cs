@@ -2,6 +2,7 @@
 using Pos.Web.Features.Customers.CreateCustomer;
 using Pos.Web.Features.Customers.DeactivateCustomer;
 using Pos.Web.Features.Customers.GetCustomer;
+using Pos.Web.Features.Customers.GetCustomerList;
 using Pos.Web.Features.Customers.UpdateCustomer;
 
 namespace Pos.Web.Features.Customers
@@ -18,6 +19,7 @@ namespace Pos.Web.Features.Customers
             group.MapActivateCustomer();
             group.MapDeactivateCustomer();
             group.MapGetCustomer();
+            group.MapGetCustomerList();
         }
     }
 }

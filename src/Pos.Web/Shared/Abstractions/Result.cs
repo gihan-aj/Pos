@@ -44,6 +44,11 @@ namespace Pos.Web.Shared.Abstractions
         public static Result<T> Success(T value) => new(value, true, Error.None);
         public static new Result<T> Failure(Error error) => new(default, false, error);
 
+        internal IResult ToProblemDetails()
+        {
+            throw new NotImplementedException();
+        }
+
         public static implicit operator Result<T>(T? value) => value is not null ? Success(value) : Failure(Error.NullValue);
 
         public static implicit operator Result<T>(Error error) => Failure(error);
