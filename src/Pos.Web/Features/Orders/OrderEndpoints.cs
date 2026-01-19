@@ -1,4 +1,5 @@
 ﻿using Pos.Web.Features.Orders.CreateOrder;
+using Pos.Web.Features.Orders.GetOrderList;
 
 namespace Pos.Web.Features.Orders
 {
@@ -10,6 +11,7 @@ namespace Pos.Web.Features.Orders
                 .WithTags("Orders");
 
             group.MapCreateOrder();
+            group.MapGetOrderList();
         }
     }
 }

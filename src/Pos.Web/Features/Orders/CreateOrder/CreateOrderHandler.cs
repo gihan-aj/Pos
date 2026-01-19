@@ -50,9 +50,11 @@ namespace Pos.Web.Features.Orders.CreateOrder
                 if (variant is null)
                     return Result.Failure<Guid>(new Shared.Errors.Error("OrderItem.NotFound", "Order item is not found.", Shared.Errors.ErrorType.NotFound));
 
-                var adjustStockResult = variant.AdjustStock(-item.Quantity);
-                if (adjustStockResult.IsFailure)
-                    return Result.Failure<Guid>(adjustStockResult.Error);
+
+                // AFTER CONFIRMATION OF THE ORDER????
+                //var adjustStockResult = variant.AdjustStock(-item.Quantity);
+                //if (adjustStockResult.IsFailure)
+                //    return Result.Failure<Guid>(adjustStockResult.Error);
 
                 var addResult = order.AddItem(variant.Product!, variant, item.Quantity);
                 if (addResult.IsFailure)
