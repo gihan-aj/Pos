@@ -11,7 +11,7 @@ namespace Pos.Web.Features.Orders.CreateOrder
             {
                 var result = await mediator.Send(command, cancellationToken);
                 return result.IsSuccess
-                    ? Results.Ok(result.Value)
+                    ? Results.Ok(new { Id = result.Value })
                     : result.ToProblemDetails();
             })
             .WithName("CreateOrder")

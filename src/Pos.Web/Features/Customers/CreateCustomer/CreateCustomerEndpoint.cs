@@ -11,12 +11,12 @@ namespace Pos.Web.Features.Customers.CreateCustomer
             {
                 var result = await mediator.Send(command, cancellationToken);
                 return result.IsSuccess
-                    ? Results.Ok(result.Value)
+                    ? Results.Ok(new { Id = result.Value })
                     : result.ToProblemDetails();
             })
             .WithName("CreateCustomer")
             .WithSummary("Creates a new customer")
-            .Produces<Guid>(200)
+            .Produces(200)
             .ProducesProblem(400)
             .ProducesProblem(409);
         }

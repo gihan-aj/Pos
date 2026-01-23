@@ -1,6 +1,6 @@
-﻿namespace Pos.Web.Features.Customers.GetCustomerList
+﻿namespace Pos.Web.Features.Customers.SearchCustomers
 {
-    public record CustomerListItem(
+    public record SearchCustomerResponse(
         Guid Id,
         string Name,
         string PhoneNumber,
@@ -10,7 +10,5 @@
         string? Country,
         string? PostalCode,
         string? Region,
-        string? Notes,
-        bool IsActive
-    );
+        string? Notes);
 }

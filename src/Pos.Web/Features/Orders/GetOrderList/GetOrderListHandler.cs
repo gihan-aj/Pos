@@ -86,7 +86,7 @@ namespace Pos.Web.Features.Orders.GetOrderList
                 o.Status,
                 o.PaymentStatus,
                 o.TotalAmount,
-                o.OrderItems.Count, // EF Core translates this to a subquery count
+                o.OrderItems.Sum(oi => oi.Quantity), // EF Core translates this to a subquery count
                 o.PaymentMethod,
                 o.DeliveryCity
             ));

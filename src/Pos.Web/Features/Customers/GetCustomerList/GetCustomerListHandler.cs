@@ -1,4 +1,5 @@
-﻿using Pos.Web.Infrastructure.Persistence;
+﻿using Microsoft.EntityFrameworkCore;
+using Pos.Web.Infrastructure.Persistence;
 using Pos.Web.Shared.Abstractions;
 
 namespace Pos.Web.Features.Customers.GetCustomerList
@@ -14,7 +15,9 @@ namespace Pos.Web.Features.Customers.GetCustomerList
 
         public async Task<Result<PagedList<CustomerListItem>>> Handle(GetCustomerListQuery request, CancellationToken cancellationToken)
         {
-            var query = _dbContext.Customers.AsQueryable();
+            var query = _dbContext.Customers
+                .AsNoTracking()
+                .AsQueryable();
 
 
             // Is active
@@ -82,7 +85,12 @@ namespace Pos.Web.Features.Customers.GetCustomerList
                     c.Name,
                     c.PhoneNumber,
                     c.Email,
+                    c.Address,
                     c.City,
+                    c.Country,
+                    c.PostalCode,
+                    c.Region,
+                    c.Notes,
                     c.IsActive
                 ));
 
