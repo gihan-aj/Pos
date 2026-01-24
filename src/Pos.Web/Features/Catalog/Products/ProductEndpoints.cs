@@ -9,6 +9,7 @@ using Pos.Web.Features.Catalog.Products.GetInventory;
 using Pos.Web.Features.Catalog.Products.GetProduct;
 using Pos.Web.Features.Catalog.Products.GetProductList;
 using Pos.Web.Features.Catalog.Products.GetProductVariant;
+using Pos.Web.Features.Catalog.Products.GetProductVariantList;
 using Pos.Web.Features.Catalog.Products.RemoveProductImage;
 using Pos.Web.Features.Catalog.Products.RemoveProductVariant;
 using Pos.Web.Features.Catalog.Products.SetPrimaryProductImage;
@@ -38,6 +39,7 @@ namespace Pos.Web.Features.Catalog.Products
             group.MapDeactivateProductVariant();
             group.MapGetProductVariant();
             group.MapGetInventory();
+            group.MapGetProductVariantList();
 
             group.MapAddProductImage();
             group.MapSetPrimaryProductImage();
