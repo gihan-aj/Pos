@@ -16,7 +16,7 @@ namespace Pos.Web.Features.Orders.CreateOrder
             })
             .WithName("CreateOrder")
             .WithSummary("Creates a new order")
-            .Produces<Guid>(200)
+            .Produces(200)
             .ProducesProblem(404)
             .ProducesProblem(409);
         }
