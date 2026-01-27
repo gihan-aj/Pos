@@ -21,17 +21,32 @@ namespace Pos.Web.Features.Orders.CreateOrder
             if (!customerExists)
                 return Result.Failure<Guid>(new Shared.Errors.Error("Order.CustomerNotFound", "Customer not found.", Shared.Errors.ErrorType.NotFound));
 
+            Guid? courierId = null;
+            if (command.CourierId.HasValue)
+            {
+                bool courierExists = await _dbContext.Couriers
+                    .AnyAsync(c => c.Id == command.CourierId.Value, cancellationToken);
+                if(courierExists)
+                    courierId = command.CourierId.Value;
+            }
+
             // Temporary !!!!!
             var orderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 4).ToUpper()}";
 
             var orderResult = Order.Create(
-                command.CustomerId,
                 orderNumber,
+                command.CustomerId,
                 command.DeliveryAddress,
                 command.DeliveryCity,
+                command.DeliveryRegion,
+                command.DeliveryCountry,
                 command.DeliveryPostalCode,
+                PaymentStatus.Unpaid, // TODO : Derive from payments
                 command.Notes,
-                command.ShippingFee);
+                courierId,
+                command.ShippingFee,
+                command.TaxAmount,
+                command.DiscountAmount);
 
             if (orderResult.IsFailure)
                 return Result.Failure<Guid>(orderResult.Error);

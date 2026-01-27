@@ -1,4 +1,5 @@
 ﻿using Pos.Web.Features.Catalog.Entities;
+using Pos.Web.Features.Couriers.Entities;
 using Pos.Web.Features.Customers;
 using Pos.Web.Shared.Abstractions;
 
@@ -9,25 +10,36 @@ namespace Pos.Web.Features.Orders.Entities
         private Order() { }
 
         private Order(
-            Guid customerId,
             string orderNumber,
-            string? deliveryAddress,
+            Guid customerId,
+            string deliveryAddress,
             string? deliveryCity,
+            string? deliveryRegion,
+            string? deliveryCountry,
             string? deliveryPostalCode,
+            PaymentStatus paymentStatus,
             string? notes,
-            decimal shippingFee = 0)
+            Guid? courierId,
+            decimal shippingFee = 0,
+            decimal taxAmount = 0,
+            decimal discountAmount = 0)
         {
             Id = Guid.NewGuid();
-            CustomerId = customerId;
             OrderNumber = orderNumber;
+            CustomerId = customerId;
             OrderDate = DateTime.UtcNow;
             Status = OrderStatus.Pending;
-            PaymentStatus = PaymentStatus.Unpaid;
+            PaymentStatus = paymentStatus;
             DeliveryAddress = deliveryAddress;
             DeliveryCity = deliveryCity;
             DeliveryPostalCode = deliveryPostalCode;
+            DeliveryRegion = deliveryRegion;
+            DeliveryCountry = deliveryCountry;
             Notes = notes;
+            CourierId = courierId;
             ShippingFee = shippingFee;
+            TaxAmount = taxAmount;
+            DiscountAmount = discountAmount;
             SubTotal = 0;
             TotalAmount = shippingFee;
             AmountDue = shippingFee;
@@ -52,11 +64,14 @@ namespace Pos.Web.Features.Orders.Entities
 
         // -- Delivery & Info --
         public string? PaymentMethod { get; private set; }
-        public string? DeliveryAddress { get; private set; }
+        public string DeliveryAddress { get; private set; } = string.Empty;
         public string? DeliveryCity { get; private set; }
         public string? DeliveryPostalCode { get; private set; }
+        public string? DeliveryRegion { get; private set; }
+        public string? DeliveryCountry { get; private set; }
 
-        public string? CourierService { get; private set; }
+        public Guid? CourierId { get; private set; }
+        public Courier? Courier { get; private set; }
         public string? TrackingNumber { get; private set; }
         public string? Notes { get; private set; }
 
@@ -66,13 +81,19 @@ namespace Pos.Web.Features.Orders.Entities
 
         // --- FACTORY METHOD ---
         public static Result<Order> Create(
-            Guid customerId,
             string orderNumber,
-            string? deliveryAddress,
+            Guid customerId,
+            string deliveryAddress,
             string? deliveryCity,
+            string? deliveryRegion,
+            string? deliveryCountry,
             string? deliveryPostalCode,
+            PaymentStatus paymentStatus,
             string? notes,
-            decimal shippingFee = 0)
+            Guid? courierId,
+            decimal shippingFee = 0,
+            decimal taxAmount = 0,
+            decimal discountAmount = 0)
         {
             if(customerId == Guid.Empty)
                 return Result.Failure<Order>(new Shared.Errors.Error("Order.InvalidCustomerId", "Customer ID cannot be empty.", Shared.Errors.ErrorType.Validation));
@@ -80,14 +101,23 @@ namespace Pos.Web.Features.Orders.Entities
             if(string.IsNullOrEmpty(orderNumber))
                 return Result.Failure<Order>(new Shared.Errors.Error("Order.InvalidOrderNumber", "Order number cannot be empty.", Shared.Errors.ErrorType.Validation));
 
+            if(string.IsNullOrEmpty(deliveryAddress))
+                return Result.Failure<Order>(new Shared.Errors.Error("Order.InvalidDeliveryAddress", "Delivery address cannot be empty.", Shared.Errors.ErrorType.Validation));
+
             return new Order(
-                customerId,
                 orderNumber,
+                customerId,
                 deliveryAddress,
                 deliveryCity,
+                deliveryRegion,
+                deliveryCountry,
                 deliveryPostalCode,
+                paymentStatus,
                 notes,
-                shippingFee);
+                courierId,
+                shippingFee,
+                taxAmount,
+                discountAmount);
         }
 
         // --- DOMAIN BEHAVIOR ---
@@ -113,6 +143,20 @@ namespace Pos.Web.Features.Orders.Entities
             SubTotal = _orderItems.Sum(oi => oi.SubTotal);
             TotalAmount = SubTotal - DiscountAmount + TaxAmount + ShippingFee;
             AmountDue = TotalAmount - AmountPaid;
+        }
+
+        public Result AssignCourier(Courier courier, string? trackingNumber)
+        {
+            if (courier is null)
+                return Result.Failure(new Shared.Errors.Error("Order.InvalidCourier", "Courier cannot be null.", Shared.Errors.ErrorType.Validation));
+
+            if (!courier.IsActive)
+                return Result.Failure(new Shared.Errors.Error("Order.InactiveCourier", "Cannot assign an inactive courier.", Shared.Errors.ErrorType.Validation));
+
+            CourierId = courier.Id;
+            TrackingNumber = trackingNumber;
+
+            return Result.Success();
         }
     }
 }

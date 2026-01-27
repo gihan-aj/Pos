@@ -30,14 +30,20 @@ namespace Pos.Web.Features.Orders.Entities
             builder.Property(o => o.AmountDue).HasPrecision(18, 2);
 
             // Address & Info
-            builder.Property(o => o.DeliveryAddress).HasMaxLength(200).IsRequired(false);
+            builder.Property(o => o.DeliveryAddress).HasMaxLength(200).IsRequired();
             builder.Property(o => o.DeliveryCity).HasMaxLength(100).IsRequired(false);
+            builder.Property(o => o.DeliveryRegion).HasMaxLength(100).IsRequired(false);
+            builder.Property(o => o.DeliveryCountry).HasMaxLength(100).IsRequired(false);
             builder.Property(o => o.DeliveryPostalCode).HasMaxLength(20).IsRequired(false);
-            builder.Property(o => o.CourierService).HasMaxLength(100).IsRequired(false);
             builder.Property(o => o.TrackingNumber).HasMaxLength(100).IsRequired(false);
             builder.Property(o => o.Notes).HasMaxLength(200).IsRequired(false);
 
             builder.Property(o => o.PaymentMethod).HasMaxLength(50).IsRequired(false);
+
+            builder.HasOne(o => o.Courier)
+                .WithMany(c => c.Orders)
+                .HasForeignKey(o => o.CourierId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.Property(o => o.CreatedBy).HasMaxLength(36);
             builder.Property(o => o.ModifiedBy).HasMaxLength(36).IsRequired(false);

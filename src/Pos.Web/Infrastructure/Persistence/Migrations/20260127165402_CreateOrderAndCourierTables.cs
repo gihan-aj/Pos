@@ -6,11 +6,31 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pos.Web.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddOrderTables : Migration
+    public partial class CreateOrderAndCourierTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Couriers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TrackingUrlTemplate = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    WebsiteUrl = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    ModifiedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Couriers", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
@@ -29,10 +49,12 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     AmountPaid = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     AmountDue = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    DeliveryAddress = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    DeliveryAddress = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     DeliveryCity = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     DeliveryPostalCode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    CourierService = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DeliveryRegion = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    DeliveryCountry = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CourierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TrackingNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Notes = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -43,6 +65,12 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Couriers_CourierId",
+                        column: x => x.CourierId,
+                        principalTable: "Couriers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Orders_Customers_CustomerId",
                         column: x => x.CustomerId,
@@ -83,9 +111,20 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Couriers_Name",
+                table: "Couriers",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId",
                 table: "OrderItems",
                 column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_CourierId",
+                table: "Orders",
+                column: "CourierId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerId",
@@ -107,6 +146,9 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Couriers");
         }
     }
 }

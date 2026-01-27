@@ -232,6 +232,54 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     b.ToTable("ProductVariants", (string)null);
                 });
 
+            modelBuilder.Entity("Pos.Web.Features.Couriers.Entities.Courier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime>("CreatedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasMaxLength(36)
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<DateTime?>("ModifiedOnUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("TrackingUrlTemplate")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("WebsiteUrl")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Couriers", (string)null);
+                });
+
             modelBuilder.Entity("Pos.Web.Features.Customers.Customer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -315,9 +363,8 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("CourierService")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<Guid?>("CourierId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(36)
@@ -330,6 +377,7 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DeliveryAddress")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -337,9 +385,17 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("DeliveryCountry")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("DeliveryPostalCode")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("DeliveryRegion")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("DiscountAmount")
                         .HasPrecision(18, 2)
@@ -395,6 +451,8 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CourierId");
 
                     b.HasIndex("CustomerId");
 
@@ -469,6 +527,11 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Pos.Web.Features.Orders.Entities.Order", b =>
                 {
+                    b.HasOne("Pos.Web.Features.Couriers.Entities.Courier", "Courier")
+                        .WithMany("Orders")
+                        .HasForeignKey("CourierId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Pos.Web.Features.Customers.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
@@ -544,6 +607,8 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
+                    b.Navigation("Courier");
+
                     b.Navigation("Customer");
 
                     b.Navigation("OrderItems");
@@ -557,6 +622,11 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Pos.Web.Features.Catalog.Entities.Product", b =>
                 {
                     b.Navigation("Variants");
+                });
+
+            modelBuilder.Entity("Pos.Web.Features.Couriers.Entities.Courier", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Pos.Web.Features.Customers.Customer", b =>

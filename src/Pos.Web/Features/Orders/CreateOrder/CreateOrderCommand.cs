@@ -6,12 +6,15 @@ namespace Pos.Web.Features.Orders.CreateOrder
     {
         public Guid CustomerId { get; init; }
         public List<OrderItemDto> Items { get; init; } = new();
-
-        // Delivery Info
-        public string? DeliveryAddress { get; init; }
+        public string DeliveryAddress { get; init; } = string.Empty;
         public string? DeliveryCity { get; init; }
+        public string? DeliveryRegion { get; init; }
+        public string? DeliveryCountry { get; init; }
         public string? DeliveryPostalCode { get; init; }
         public string? Notes { get; init; }
+        public Guid? CourierId { get; init; }
         public decimal ShippingFee { get; init; }
+        public decimal TaxAmount { get; init; }
+        public decimal DiscountAmount { get; init; }
     }
 }
