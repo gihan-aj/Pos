@@ -2,6 +2,8 @@
 using Pos.Web.Features.Couriers.Entities;
 using Pos.Web.Features.Customers;
 using Pos.Web.Shared.Abstractions;
+using Pos.Web.Shared.Enums;
+using Pos.Web.Shared.Errors;
 
 namespace Pos.Web.Features.Orders.Entities
 {
@@ -79,6 +81,10 @@ namespace Pos.Web.Features.Orders.Entities
         private readonly List<OrderItem> _orderItems = new();
         public IReadOnlyCollection<OrderItem> OrderItems => _orderItems.AsReadOnly();
 
+        // -- Payments --
+        private readonly List<OrderPayment> _payments = new();
+        public IReadOnlyCollection<OrderPayment> Payments => _payments.AsReadOnly();
+
         // --- FACTORY METHOD ---
         public static Result<Order> Create(
             string orderNumber,
@@ -96,13 +102,13 @@ namespace Pos.Web.Features.Orders.Entities
             decimal discountAmount = 0)
         {
             if(customerId == Guid.Empty)
-                return Result.Failure<Order>(new Shared.Errors.Error("Order.InvalidCustomerId", "Customer ID cannot be empty.", Shared.Errors.ErrorType.Validation));
+                return Result.Failure<Order>(Error.Validation("Order.InvalidCustomerId", "Customer ID cannot be empty."));
 
             if(string.IsNullOrEmpty(orderNumber))
-                return Result.Failure<Order>(new Shared.Errors.Error("Order.InvalidOrderNumber", "Order number cannot be empty.", Shared.Errors.ErrorType.Validation));
+                return Result.Failure<Order>(Error.Validation("Order.InvalidOrderNumber", "Order number cannot be empty."));
 
             if(string.IsNullOrEmpty(deliveryAddress))
-                return Result.Failure<Order>(new Shared.Errors.Error("Order.InvalidDeliveryAddress", "Delivery address cannot be empty.", Shared.Errors.ErrorType.Validation));
+                return Result.Failure<Order>(Error.Validation("Order.InvalidDeliveryAddress", "Delivery address cannot be empty."));
 
             return new Order(
                 orderNumber,
@@ -124,10 +130,10 @@ namespace Pos.Web.Features.Orders.Entities
         public Result AddItem(Product product, ProductVariant variant, int quantity, decimal discountPerItem = 0)
         {
             if(quantity <= 0)
-                return Result.Failure(new Shared.Errors.Error("OrderItem.InvalidQuantity", "Quantity must be greater than zero.", Shared.Errors.ErrorType.Validation));
+                return Result.Failure(Error.Validation("OrderItem.InvalidQuantity", "Quantity must be greater than zero."));
 
             if(product.Id != variant.ProductId)
-                return Result.Failure(new Shared.Errors.Error("OrderItem.VariantMismatch", "The product variant does not belong to the specified product.", Shared.Errors.ErrorType.Validation));
+                return Result.Failure(Error.Validation("OrderItem.VariantMismatch", "The product variant does not belong to the specified product."));
 
             var orderItem = new OrderItem(Id, product, variant, quantity, discountPerItem);
 
@@ -142,21 +148,56 @@ namespace Pos.Web.Features.Orders.Entities
         {
             SubTotal = _orderItems.Sum(oi => oi.SubTotal);
             TotalAmount = SubTotal - DiscountAmount + TaxAmount + ShippingFee;
-            AmountDue = TotalAmount - AmountPaid;
+
+            RecalculatePaymentStatus();
         }
 
         public Result AssignCourier(Courier courier, string? trackingNumber)
         {
             if (courier is null)
-                return Result.Failure(new Shared.Errors.Error("Order.InvalidCourier", "Courier cannot be null.", Shared.Errors.ErrorType.Validation));
+                return Result.Failure(Error.Validation("Order.InvalidCourier", "Courier cannot be null."));
 
             if (!courier.IsActive)
-                return Result.Failure(new Shared.Errors.Error("Order.InactiveCourier", "Cannot assign an inactive courier.", Shared.Errors.ErrorType.Validation));
+                return Result.Failure(Error.Validation("Order.InactiveCourier", "Cannot assign an inactive courier."));
 
             CourierId = courier.Id;
             TrackingNumber = trackingNumber;
 
             return Result.Success();
+        }
+
+        public Result AddPayment(decimal amount, DateTime payementDate, PaymentMethod paymentMethod, string? transactionId, string? notes = null)
+        {
+            if (amount <= 0)
+                return Result.Failure(Error.Validation("Payment.InvalidAmount", "Payment amount must be greater than zero."));
+
+            //if (amount > AmountDue)
+            //    return Result.Failure(Error.Validation("Payment.Overpayment", "Payment amount exceeds the amount due."));
+
+            var payment = new OrderPayment(Id, amount, payementDate, paymentMethod, transactionId, notes);
+            _payments.Add(payment);
+
+            RecalculatePaymentStatus();
+
+            return Result.Success();
+        }
+
+        private void RecalculatePaymentStatus()
+        {
+            AmountPaid = _payments
+                .Where(p => p.IsSuccessful)
+                .Sum(p => p.Amount);
+
+            AmountDue = TotalAmount - AmountPaid;
+
+            if (AmountPaid == 0)
+                PaymentStatus = PaymentStatus.Unpaid;
+
+            else if(AmountPaid >= TotalAmount)
+                PaymentStatus = PaymentStatus.Paid;
+
+            else
+                PaymentStatus = PaymentStatus.Partial;
         }
     }
 }

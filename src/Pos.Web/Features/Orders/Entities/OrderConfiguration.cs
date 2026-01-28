@@ -77,8 +77,14 @@ namespace Pos.Web.Features.Orders.Entities
                 ob.Property(i => i.ModifiedBy).HasMaxLength(36).IsRequired(false);
             });
 
+            builder.HasMany(o => o.Payments)
+                .WithOne()
+                .HasForeignKey(p => p.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Navigation Metadata
             builder.Navigation(o => o.OrderItems).UsePropertyAccessMode(PropertyAccessMode.Field);
+            builder.Navigation(o => o.Payments).UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }

@@ -76,6 +76,19 @@ namespace Pos.Web.Features.Orders.CreateOrder
                     return Result.Failure<Guid>(addResult.Error);
             }
 
+            foreach(var payment in command.OrderPayments)
+            {
+                var addResult = order.AddPayment(
+                    payment.Amount, 
+                    payment.PaymentDate, 
+                    payment.PaymentMethod, 
+                    payment.TransactionId, 
+                    payment.Notes);
+
+                if (addResult.IsFailure)
+                    return Result.Failure<Guid>(addResult.Error);
+            }
+
             _dbContext.Orders.Add(order);
             await _dbContext.SaveChangesAsync(cancellationToken);
 

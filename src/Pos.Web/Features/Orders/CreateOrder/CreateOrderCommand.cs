@@ -16,5 +16,6 @@ namespace Pos.Web.Features.Orders.CreateOrder
         public decimal ShippingFee { get; init; }
         public decimal TaxAmount { get; init; }
         public decimal DiscountAmount { get; init; }
+        public List<OrderPaymentDto> OrderPayments { get; init; } = new();
     }
 }
