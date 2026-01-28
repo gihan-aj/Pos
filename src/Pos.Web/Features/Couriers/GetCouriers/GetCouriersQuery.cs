@@ -2,5 +2,5 @@
 
 namespace Pos.Web.Features.Couriers.GetCouriers
 {
-    public record GetCouriersQuery(bool? IsActive) : IQuery<List<GetCouriersResponse>>;
+    public record GetCouriersQuery(string? Search, bool? IsActive) : IQuery<List<GetCouriersResponse>>;
 }

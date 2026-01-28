@@ -23,11 +23,13 @@ namespace Pos.Web.Features.Orders.GetOrder
         string DeliveryAddress,
         string? DeliveryCity,
         string? DeliveryRegion,
-        string? DeleiveryCountry,
+        string? DeliveryCountry,
         string? DeliveryPostalCode,
         Guid? CourierId,
         string? CourierName,
         string? TrackingNumber,
+
+        string? Notes,
 
         // Collections
         List<OrderItemDto> Items,

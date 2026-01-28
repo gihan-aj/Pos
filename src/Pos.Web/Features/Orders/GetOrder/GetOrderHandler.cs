@@ -19,6 +19,7 @@ namespace Pos.Web.Features.Orders.GetOrder
             var order = await _dbContext.Orders
                 .AsNoTracking()
                 .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.ProductVariant)
                 .Include(o => o.Payments)
                 .Include(o => o.Courier)
                 .Include(o => o.Customer)
@@ -62,6 +63,7 @@ namespace Pos.Web.Features.Orders.GetOrder
                 order.CourierId,
                 order.Courier?.Name,
                 order.TrackingNumber,
+                order.Notes,
                 order.OrderItems.Select(i => new OrderItemDto(
                     i.Id,
                     i.ProductVariant?.ProductId,

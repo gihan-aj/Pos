@@ -23,6 +23,14 @@ namespace Pos.Web.Features.Couriers.GetCouriers
                 query = query.Where(x => x.IsActive);
             }
 
+            if (!string.IsNullOrEmpty(request.Search))
+            {
+                var term = request.Search.Trim();
+                query = query
+                    .Where(c => c.Name.Contains(term) ||
+                    (c.PhoneNumber != null && c.PhoneNumber.Contains(term)));
+            }
+
             var couriers = await query
                 .OrderBy(c => c.Name)
                 .Select(c => new GetCouriersResponse(c.Id,c.Name, c.PhoneNumber, c.IsActive))
