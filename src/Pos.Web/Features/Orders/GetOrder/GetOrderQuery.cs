@@ -1,6 +1,6 @@
-﻿namespace Pos.Web.Features.Orders.GetOrder
+﻿using Pos.Web.Shared.Abstractions;
+
+namespace Pos.Web.Features.Orders.GetOrder
 {
-    public class GetOrderQuery
-    {
-    }
+    public record GetOrderQuery(Guid Id) : IQuery<GetOrderResponse>;
 }

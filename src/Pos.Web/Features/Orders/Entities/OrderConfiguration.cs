@@ -61,6 +61,11 @@ namespace Pos.Web.Features.Orders.Entities
                 ob.HasKey(i => i.Id);
                 ob.WithOwner().HasForeignKey(i => i.OrderId);
 
+                ob.HasOne(i => i.ProductVariant)
+                    .WithMany()
+                    .HasForeignKey(i => i.ProductVariantId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 // Snapshots
                 ob.Property(i => i.ProductName).HasMaxLength(100).IsRequired();
                 ob.Property(i => i.Sku).HasMaxLength(50).IsRequired();

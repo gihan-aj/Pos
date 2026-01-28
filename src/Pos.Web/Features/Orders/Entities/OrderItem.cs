@@ -30,6 +30,7 @@ namespace Pos.Web.Features.Orders.Entities
 
         public Guid OrderId { get; private set; }
         public Guid ProductVariantId { get; private set; }
+        public ProductVariant? ProductVariant { get; private set; }
 
         // Snapshot data
         public string ProductName { get; private set; } = string.Empty;
