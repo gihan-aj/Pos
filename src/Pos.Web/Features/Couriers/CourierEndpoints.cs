@@ -1,4 +1,5 @@
 ﻿using Pos.Web.Features.Couriers.CreateCourier;
+using Pos.Web.Features.Couriers.GetCouriers;
 
 namespace Pos.Web.Features.Couriers
 {
@@ -10,6 +11,7 @@ namespace Pos.Web.Features.Couriers
                 .WithTags("Couriers");
 
             group.MapCreateCourier();
+            group.MapGetCouriers();
         }
     }
 }
