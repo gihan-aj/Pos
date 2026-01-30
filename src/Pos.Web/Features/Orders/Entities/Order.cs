@@ -199,5 +199,40 @@ namespace Pos.Web.Features.Orders.Entities
             else
                 PaymentStatus = PaymentStatus.Partial;
         }
+
+        public Result UpdateDeliveryInfo(
+            Guid courierId,
+            string deliveryAddress,
+            string? deliveryCity,
+            string? deliveryRegion,
+            string? deliveryCountry,
+            string? deliveryPostalCode,
+            string? trackingNumber,
+            string? notes)
+        {
+            if (Status == OrderStatus.Shipped ||
+                Status == OrderStatus.Delivered ||
+                Status == OrderStatus.Completed ||
+                Status == OrderStatus.Cancelled)
+            {
+                return Result.Failure(Error.Validation("Order.CannotUpdate", $"Cannot update delivery details when order status is '{Status}'."));
+            }
+
+            if(string.IsNullOrWhiteSpace(deliveryAddress))
+            {
+                return Result.Failure(Error.Validation("Order.InvalidAddress", "Delivery address cannot be empty."));
+            }
+
+            CourierId = courierId;
+            DeliveryAddress = deliveryAddress;
+            DeliveryCity = deliveryCity;
+            DeliveryRegion = deliveryRegion;
+            DeliveryCountry = deliveryCountry;
+            DeliveryPostalCode = deliveryPostalCode;
+            TrackingNumber = trackingNumber;
+            Notes = notes;
+
+            return Result.Success(); 
+        }
     }
 }
