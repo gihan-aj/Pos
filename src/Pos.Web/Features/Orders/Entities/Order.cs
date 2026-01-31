@@ -127,34 +127,35 @@ namespace Pos.Web.Features.Orders.Entities
         }
 
         // --- DOMAIN BEHAVIOR ---
-        public Result AddItem(Product product, ProductVariant variant, int quantity, decimal discountPerItem = 0)
+        public Result<OrderItem> AddItem(Product product, ProductVariant variant, int quantity, decimal discountPerItem = 0)
         {
             if (Status == OrderStatus.Completed ||
                 Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
-                return Result.Failure(Error.Validation("Order.CannotAddItem", $"Cannot add items when order status is '{Status}'."));
+                return Result.Failure<OrderItem>(Error.Validation("Order.CannotAddItem", $"Cannot add items when order status is '{Status}'."));
 
             if(quantity <= 0)
-                return Result.Failure(Error.Validation("OrderItem.InvalidQuantity", "Quantity must be greater than zero."));
+                return Result.Failure<OrderItem>(Error.Validation("OrderItem.InvalidQuantity", "Quantity must be greater than zero."));
 
             if(product.Id != variant.ProductId)
-                return Result.Failure(Error.Validation("OrderItem.VariantMismatch", "The product variant does not belong to the specified product."));
+                return Result.Failure<OrderItem>(Error.Validation("OrderItem.VariantMismatch", "The product variant does not belong to the specified product."));
 
-            var existingItem = _orderItems.FirstOrDefault(i => i.Id ==  variant.Id);
+            var existingItem = _orderItems.FirstOrDefault(i => i.ProductVariantId ==  variant.Id);
             if (existingItem != null)
             {
                 existingItem.IncreaseQuantity(quantity);
+                RecalculateTotals();
+
+                return existingItem;
             }
-            else
-            {
-                var orderItem = new OrderItem(Id, product, variant, quantity, discountPerItem);
-                _orderItems.Add(orderItem);
-            }
+
+            var orderItem = new OrderItem(Id, product, variant, quantity, discountPerItem);
+            _orderItems.Add(orderItem);
 
             RecalculateTotals();
 
-            return Result.Success();
+            return orderItem;
         }
 
         public Result ChangeOrdetItemQuantity(Guid orderItemId, int Quantity)
@@ -171,6 +172,26 @@ namespace Pos.Web.Features.Orders.Entities
                 return Result.Failure(Error.NotFound("OrderItem.NotFound", "Order item not found in the order."));
             }
             existingItem.UpdateQuantity(Quantity);
+            RecalculateTotals();
+
+            return Result.Success();
+        }
+
+        public Result RemoveOrderItem(Guid orderItemId)
+        {
+            if (Status == OrderStatus.Completed ||
+                Status == OrderStatus.Shipped ||
+                Status == OrderStatus.Delivered ||
+                Status == OrderStatus.Cancelled)
+                return Result.Failure(Error.Validation("Order.CannotRemoveItem", $"Cannot remove items when order status is '{Status}'."));
+
+            var existingItem = _orderItems.FirstOrDefault(i => i.Id == orderItemId);
+            if (existingItem is null)
+            {
+                return Result.Failure(Error.NotFound("OrderItem.NotFound", "Order item not found in the order."));
+            }
+
+            _orderItems.Remove(existingItem);
             RecalculateTotals();
 
             return Result.Success();

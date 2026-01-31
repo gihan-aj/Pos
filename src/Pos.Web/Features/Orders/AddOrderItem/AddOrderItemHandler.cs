@@ -36,7 +36,14 @@ namespace Pos.Web.Features.Orders.AddOrderItem
             var result = order.AddItem(variant.Product!, variant, command.Quantity);
 
             if (result.IsFailure)
-                return result;
+                return Result.Failure(result.Error);
+
+            var item = result.Value;
+            var entry = _dbContext.Entry(item);
+            if(entry.State == EntityState.Detached)
+            {
+                _dbContext.OrderItems.Add(item);
+            }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

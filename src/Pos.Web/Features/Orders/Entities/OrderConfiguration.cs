@@ -53,34 +53,39 @@ namespace Pos.Web.Features.Orders.Entities
                 .HasForeignKey(o => o.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasMany(o => o.OrderItems)
+                    .WithOne()
+                    .HasForeignKey(oi => oi.OrderId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
             // --- ORDER ITEMS (Owned Collection) ---
-            builder.OwnsMany(o => o.OrderItems, ob =>
-            {
-                ob.ToTable("OrderItems");
+            //builder.OwnsMany(o => o.OrderItems, ob =>
+            //{
+            //    ob.ToTable("OrderItems");
 
-                ob.HasKey(i => i.Id);
-                ob.WithOwner().HasForeignKey(i => i.OrderId);
+            //    ob.HasKey(i => i.Id);
+            //    ob.WithOwner().HasForeignKey(i => i.OrderId);
 
-                ob.HasOne(i => i.ProductVariant)
-                    .WithMany()
-                    .HasForeignKey(i => i.ProductVariantId)
-                    .OnDelete(DeleteBehavior.Restrict);
+            //    ob.HasOne(i => i.ProductVariant)
+            //        .WithMany()
+            //        .HasForeignKey(i => i.ProductVariantId)
+            //        .OnDelete(DeleteBehavior.Restrict);
 
-                // Snapshots
-                ob.Property(i => i.ProductName).HasMaxLength(100).IsRequired();
-                ob.Property(i => i.Sku).HasMaxLength(50).IsRequired();
-                ob.Property(i => i.VariantDetails).HasMaxLength(200).IsRequired(false);
+            //    // Snapshots
+            //    ob.Property(i => i.ProductName).HasMaxLength(100).IsRequired();
+            //    ob.Property(i => i.Sku).HasMaxLength(50).IsRequired();
+            //    ob.Property(i => i.VariantDetails).HasMaxLength(200).IsRequired(false);
 
-                // Money
-                ob.Property(i => i.UnitPrice).HasPrecision(18, 2);
-                ob.Property(i => i.UnitCost).HasPrecision(18, 2);
-                ob.Property(i => i.DiscountAmount).HasPrecision(18, 2);
-                ob.Property(i => i.SubTotal).HasPrecision(18, 2);
+            //    // Money
+            //    ob.Property(i => i.UnitPrice).HasPrecision(18, 2);
+            //    ob.Property(i => i.UnitCost).HasPrecision(18, 2);
+            //    ob.Property(i => i.DiscountAmount).HasPrecision(18, 2);
+            //    ob.Property(i => i.SubTotal).HasPrecision(18, 2);
 
-                // Audit fields for items
-                ob.Property(i => i.CreatedBy).HasMaxLength(36);
-                ob.Property(i => i.ModifiedBy).HasMaxLength(36).IsRequired(false);
-            });
+            //    // Audit fields for items
+            //    ob.Property(i => i.CreatedBy).HasMaxLength(36);
+            //    ob.Property(i => i.ModifiedBy).HasMaxLength(36).IsRequired(false);
+            //});
 
             builder.HasMany(o => o.Payments)
                 .WithOne()

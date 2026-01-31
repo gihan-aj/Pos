@@ -92,7 +92,7 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("[ParentCategoryId] IS NOT NULL");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Pos.Web.Features.Catalog.Entities.Product", b =>
@@ -162,7 +162,7 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("[Sku] IS NOT NULL");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Pos.Web.Features.Catalog.Entities.ProductVariant", b =>
