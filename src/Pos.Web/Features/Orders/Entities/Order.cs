@@ -157,6 +157,25 @@ namespace Pos.Web.Features.Orders.Entities
             return Result.Success();
         }
 
+        public Result ChangeOrdetItemQuantity(Guid orderItemId, int Quantity)
+        {
+            if (Status == OrderStatus.Completed ||
+                Status == OrderStatus.Shipped ||
+                Status == OrderStatus.Delivered ||
+                Status == OrderStatus.Cancelled)
+                return Result.Failure(Error.Validation("Order.CannotUpdateItem", $"Cannot update items when order status is '{Status}'."));
+
+            var existingItem = _orderItems.FirstOrDefault(i => i.Id == orderItemId);
+            if (existingItem is null)
+            {
+                return Result.Failure(Error.NotFound("OrderItem.NotFound", "Order item not found in the order."));
+            }
+            existingItem.UpdateQuantity(Quantity);
+            RecalculateTotals();
+
+            return Result.Success();
+        }
+
         public void RecalculateTotals()
         {
             SubTotal = _orderItems.Sum(oi => oi.SubTotal);

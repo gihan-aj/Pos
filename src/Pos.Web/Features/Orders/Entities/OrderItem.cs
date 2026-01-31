@@ -53,5 +53,11 @@ namespace Pos.Web.Features.Orders.Entities
             Quantity += quantity;
             CalculateSubTotal();
         }
+        
+        public void UpdateQuantity(int quantity)
+        {
+            Quantity = quantity;
+            CalculateSubTotal();
+        }
     }
 }
