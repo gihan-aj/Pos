@@ -23,7 +23,7 @@ namespace Pos.Web.Features.Orders.GetOrder
                 .Include(o => o.Payments)
                 .Include(o => o.Courier)
                 .Include(o => o.Customer)
-                .FirstOrDefaultAsync(cancellationToken);
+                .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
 
             if (order is null)
                 return Result.Failure<GetOrderResponse>(Error.NotFound("Order.NotFound", "Order was not found."));

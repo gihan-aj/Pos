@@ -48,5 +48,10 @@ namespace Pos.Web.Features.Orders.Entities
             SubTotal = (Quantity * UnitPrice) - (DiscountAmount ?? 0);
         }
 
+        public void IncreaseQuantity(int quantity)
+        {
+            Quantity += quantity;
+            CalculateSubTotal();
+        }
     }
 }

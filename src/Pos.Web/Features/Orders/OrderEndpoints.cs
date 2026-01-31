@@ -1,4 +1,5 @@
-﻿using Pos.Web.Features.Orders.CreateOrder;
+﻿using Pos.Web.Features.Orders.AddOrderItem;
+using Pos.Web.Features.Orders.CreateOrder;
 using Pos.Web.Features.Orders.GetOrder;
 using Pos.Web.Features.Orders.GetOrderList;
 using Pos.Web.Features.Orders.UpdateOrderDelivery;
@@ -16,6 +17,7 @@ namespace Pos.Web.Features.Orders
             group.MapGetOrderList();
             group.MapGetOrder();
             group.MapUpdateOrderDelivery();
+            group.MapAddOrderItem();
         }
     }
 }

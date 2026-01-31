@@ -129,15 +129,28 @@ namespace Pos.Web.Features.Orders.Entities
         // --- DOMAIN BEHAVIOR ---
         public Result AddItem(Product product, ProductVariant variant, int quantity, decimal discountPerItem = 0)
         {
+            if (Status == OrderStatus.Completed ||
+                Status == OrderStatus.Shipped ||
+                Status == OrderStatus.Delivered ||
+                Status == OrderStatus.Cancelled)
+                return Result.Failure(Error.Validation("Order.CannotAddItem", $"Cannot add items when order status is '{Status}'."));
+
             if(quantity <= 0)
                 return Result.Failure(Error.Validation("OrderItem.InvalidQuantity", "Quantity must be greater than zero."));
 
             if(product.Id != variant.ProductId)
                 return Result.Failure(Error.Validation("OrderItem.VariantMismatch", "The product variant does not belong to the specified product."));
 
-            var orderItem = new OrderItem(Id, product, variant, quantity, discountPerItem);
-
-            _orderItems.Add(orderItem);
+            var existingItem = _orderItems.FirstOrDefault(i => i.Id ==  variant.Id);
+            if (existingItem != null)
+            {
+                existingItem.IncreaseQuantity(quantity);
+            }
+            else
+            {
+                var orderItem = new OrderItem(Id, product, variant, quantity, discountPerItem);
+                _orderItems.Add(orderItem);
+            }
 
             RecalculateTotals();
 

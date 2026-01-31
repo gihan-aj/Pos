@@ -3,15 +3,15 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pos.Web.Shared.Extensions;
 
-namespace Pos.Web.Features.Orders.UpdateOrderDelivery
+namespace Pos.Web.Features.Orders.AddOrderItem
 {
-    public static class UpdateOrderDeliveryEndpoint
+    public static class AddOrderItemEndpoint
     {
-        public static void MapUpdateOrderDelivery(this RouteGroupBuilder group)
+        public static void MapAddOrderItem(this RouteGroupBuilder group)
         {
-            group.MapPut("/{id}/delivery", async (Guid id, UpdateOrderDeliveryCommand command, ISender mediator, CancellationToken cancellationToken = default) =>
+            group.MapPost("/{id}/items", async (Guid id, AddOrderItemCommand command, ISender mediator, CancellationToken cancellationToken = default) =>
             {
-                if (id != command.Id) 
+                if (id != command.OrderId)
                     return Results.Problem(statusCode: 400, title: "Bad Request", detail: "ID mismatch");
 
                 var result = await mediator.Send(command, cancellationToken);
@@ -19,8 +19,8 @@ namespace Pos.Web.Features.Orders.UpdateOrderDelivery
                     ? Results.NoContent()
                     : result.ToProblemDetails();
             })
-            .WithName("UpdateOrderDelivery")
-            .WithSummary("Update a existing order delivery details")
+            .WithName("AddOrderItem")
+            .WithSummary("Add a order item to a existing order")
             .Produces(204)
             .ProducesProblem(404)
             .ProducesProblem(400);
