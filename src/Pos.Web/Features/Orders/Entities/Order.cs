@@ -197,6 +197,30 @@ namespace Pos.Web.Features.Orders.Entities
             return Result.Success();
         }
 
+        public Result UpdateFinancialDetails(decimal shippingFee, decimal taxAmount, decimal discountAmount)
+        {
+            if (Status == OrderStatus.Completed ||
+                Status == OrderStatus.Shipped ||
+                Status == OrderStatus.Delivered ||
+                Status == OrderStatus.Cancelled)
+                return Result.Failure(Error.Validation("Order.CannotUpdateFinancials", $"Cannot update financial details when order status is '{Status}'."));
+
+            if (shippingFee < 0)
+                return Result.Failure(Error.Validation("Order.InvalidShippingFee", "Shipping fee must be greater than or equal to zero."));
+            if (taxAmount < 0)
+                return Result.Failure(Error.Validation("Order.InvalidTaxAmount", "Tax amount must be greater than or equal to zero."));
+            if (discountAmount < 0)
+                return Result.Failure(Error.Validation("Order.InvalidDiscountAmount", "Discount amount must be greater than or equal to zero."));
+
+            ShippingFee = shippingFee;
+            TaxAmount = taxAmount;
+            DiscountAmount = discountAmount;
+            RecalculateTotals();
+
+            return Result.Success();
+
+        }
+
         public void RecalculateTotals()
         {
             SubTotal = _orderItems.Sum(oi => oi.SubTotal);
