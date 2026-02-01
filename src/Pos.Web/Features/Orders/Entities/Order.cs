@@ -243,20 +243,20 @@ namespace Pos.Web.Features.Orders.Entities
             return Result.Success();
         }
 
-        public Result AddPayment(decimal amount, DateTime payementDate, PaymentMethod paymentMethod, string? transactionId, string? notes = null)
+        public Result<OrderPayment> AddPayment(decimal amount, DateTime payementDate, PaymentMethod paymentMethod, string? transactionId, string? notes = null)
         {
             if (amount <= 0)
-                return Result.Failure(Error.Validation("Payment.InvalidAmount", "Payment amount must be greater than zero."));
+                return Result.Failure<OrderPayment>(Error.Validation("Payment.InvalidAmount", "Payment amount must be greater than zero."));
 
             //if (amount > AmountDue)
-            //    return Result.Failure(Error.Validation("Payment.Overpayment", "Payment amount exceeds the amount due."));
+            //    return Result.Failure<OrderPayment>(Error.Validation("Payment.Overpayment", "Payment amount exceeds the amount due."));
 
             var payment = new OrderPayment(Id, amount, payementDate, paymentMethod, transactionId, notes);
             _payments.Add(payment);
 
             RecalculatePaymentStatus();
 
-            return Result.Success();
+            return payment;
         }
 
         private void RecalculatePaymentStatus()

@@ -15,6 +15,7 @@ namespace Pos.Web.Features.Orders.Entities
             string? transactionId,
             string? notes)
         {
+            Id = Guid.NewGuid();
             OrderId = orderId;
             Amount = amount;
             PaymentDate = paymentDate;
