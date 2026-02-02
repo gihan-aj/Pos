@@ -76,6 +76,7 @@ namespace Pos.Web.Features.Orders.GetOrder
                     i.UnitPrice
                 )).ToList(),
                 order.Payments
+                .Where(p => p.Status == Entities.PaymentStatus.Completed)
                 .OrderByDescending(p => p.PaymentDate)
                 .Select(p => new OrderPaymentDto(
                     p.Id,

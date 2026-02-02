@@ -9,6 +9,6 @@ namespace Pos.Web.Features.Orders.GetOrder
         PaymentMethod PaymentMethod,
         decimal Amount,
         string? TransactionId,
-        PaymentStatus status
+        PaymentStatus Status
     );
 }
