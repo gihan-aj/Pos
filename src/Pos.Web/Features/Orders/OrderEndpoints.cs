@@ -2,6 +2,7 @@
 using Pos.Web.Features.Orders.AddPayment;
 using Pos.Web.Features.Orders.AddRefund;
 using Pos.Web.Features.Orders.ChangeOrderItemQuantity;
+using Pos.Web.Features.Orders.ConfirmOrder;
 using Pos.Web.Features.Orders.CreateOrder;
 using Pos.Web.Features.Orders.GetOrder;
 using Pos.Web.Features.Orders.GetOrderList;
@@ -30,6 +31,7 @@ namespace Pos.Web.Features.Orders
             group.MapAddPayment();
             group.MapAddRefund();
             group.MapVoidPayment();
+            group.MapConfirmOrder();
         }
     }
 }

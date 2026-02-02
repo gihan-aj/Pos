@@ -129,7 +129,8 @@ namespace Pos.Web.Features.Orders.Entities
         // --- DOMAIN BEHAVIOR ---
         public Result<OrderItem> AddItem(Product product, ProductVariant variant, int quantity, decimal discountPerItem = 0)
         {
-            if (Status == OrderStatus.Completed ||
+            if (Status == OrderStatus.Processing ||
+                Status == OrderStatus.Completed ||
                 Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
@@ -160,7 +161,8 @@ namespace Pos.Web.Features.Orders.Entities
 
         public Result ChangeOrdetItemQuantity(Guid orderItemId, int Quantity)
         {
-            if (Status == OrderStatus.Completed ||
+            if (Status == OrderStatus.Processing ||
+                Status == OrderStatus.Completed ||
                 Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
@@ -179,7 +181,8 @@ namespace Pos.Web.Features.Orders.Entities
 
         public Result RemoveOrderItem(Guid orderItemId)
         {
-            if (Status == OrderStatus.Completed ||
+            if (Status == OrderStatus.Processing ||
+                Status == OrderStatus.Completed ||
                 Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
@@ -358,6 +361,36 @@ namespace Pos.Web.Features.Orders.Entities
             Notes = notes;
 
             return Result.Success(); 
+        }
+
+        public Result Confirm()
+        {
+            if (Status != OrderStatus.Pending)
+                return Result.Failure(Error.Validation(
+                    "Order.CannotConfirm", 
+                    $"Cannot confirm order when status is '{Status}'."));
+
+            if(!_orderItems.Any())
+                return Result.Failure(Error.Validation(
+                    "Order.NoItems", 
+                    "Cannot confirm an order with no items."));
+
+            if(string.IsNullOrWhiteSpace(DeliveryAddress))
+                return Result.Failure(Error.Validation(
+                    "Order.MissingAddress",
+                    "Delivery address is required to confirm the order."));
+
+            /*
+            if (OrderPaymentStatus == OrderPaymentStatus.Unpaid)
+            {
+                // Allow ONLY if it's Cash On Delivery?
+                // return Result.Failure(Error.Validation("Order.Unpaid", "Payment required before confirmation."));
+            }
+            */
+
+            Status = OrderStatus.Confirmed;
+
+            return Result.Success();
         }
     }
 }
