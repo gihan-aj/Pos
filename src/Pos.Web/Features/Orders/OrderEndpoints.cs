@@ -1,5 +1,6 @@
 ﻿using Pos.Web.Features.Orders.AddOrderItem;
 using Pos.Web.Features.Orders.AddPayment;
+using Pos.Web.Features.Orders.AddRefund;
 using Pos.Web.Features.Orders.ChangeOrderItemQuantity;
 using Pos.Web.Features.Orders.CreateOrder;
 using Pos.Web.Features.Orders.GetOrder;
@@ -26,6 +27,7 @@ namespace Pos.Web.Features.Orders
             group.MapRemoveOrderItem();
             group.MapUpdateFinancialDetails();
             group.MapAddPayment();
+            group.MapAddRefund();
         }
     }
 }
