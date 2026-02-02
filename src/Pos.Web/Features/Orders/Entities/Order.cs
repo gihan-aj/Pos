@@ -392,5 +392,22 @@ namespace Pos.Web.Features.Orders.Entities
 
             return Result.Success();
         }
+        
+        public Result StartProcessing()
+        {
+            if (Status != OrderStatus.Confirmed)
+                return Result.Failure(Error.Validation(
+                    "Order.InvalidState",
+                    $"Order must be in 'Confirmed' state to start processing. Current state: '{Status}'."));
+
+            if(!_orderItems.Any())
+                return Result.Failure(Error.Validation(
+                    "Order.NoItems",
+                    "Cannot process an empty order."));
+
+            Status = OrderStatus.Processing;
+
+            return Result.Success();
+        }
     }
 }

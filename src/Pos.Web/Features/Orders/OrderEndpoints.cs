@@ -7,6 +7,7 @@ using Pos.Web.Features.Orders.CreateOrder;
 using Pos.Web.Features.Orders.GetOrder;
 using Pos.Web.Features.Orders.GetOrderList;
 using Pos.Web.Features.Orders.RemoveOrderItem;
+using Pos.Web.Features.Orders.StartProcessing;
 using Pos.Web.Features.Orders.UpdateFinancials;
 using Pos.Web.Features.Orders.UpdateOrderDelivery;
 using Pos.Web.Features.Orders.VoidPayment;
@@ -32,6 +33,7 @@ namespace Pos.Web.Features.Orders
             group.MapAddRefund();
             group.MapVoidPayment();
             group.MapConfirmOrder();
+            group.MapStartProcessingOrder();
         }
     }
 }
