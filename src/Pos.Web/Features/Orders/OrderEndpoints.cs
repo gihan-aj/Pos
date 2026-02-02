@@ -8,6 +8,7 @@ using Pos.Web.Features.Orders.GetOrderList;
 using Pos.Web.Features.Orders.RemoveOrderItem;
 using Pos.Web.Features.Orders.UpdateFinancials;
 using Pos.Web.Features.Orders.UpdateOrderDelivery;
+using Pos.Web.Features.Orders.VoidPayment;
 
 namespace Pos.Web.Features.Orders
 {
@@ -28,6 +29,7 @@ namespace Pos.Web.Features.Orders
             group.MapUpdateFinancialDetails();
             group.MapAddPayment();
             group.MapAddRefund();
+            group.MapVoidPayment();
         }
     }
 }
