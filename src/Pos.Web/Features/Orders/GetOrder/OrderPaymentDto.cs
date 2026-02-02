@@ -1,4 +1,5 @@
-﻿using Pos.Web.Shared.Enums;
+﻿using Pos.Web.Features.Orders.Entities;
+using Pos.Web.Shared.Enums;
 
 namespace Pos.Web.Features.Orders.GetOrder
 {
@@ -8,6 +9,6 @@ namespace Pos.Web.Features.Orders.GetOrder
         PaymentMethod PaymentMethod,
         decimal Amount,
         string? TransactionId,
-        bool IsSuccessful
+        PaymentStatus status
     );
 }

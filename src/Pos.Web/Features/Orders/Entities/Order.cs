@@ -19,7 +19,7 @@ namespace Pos.Web.Features.Orders.Entities
             string? deliveryRegion,
             string? deliveryCountry,
             string? deliveryPostalCode,
-            PaymentStatus paymentStatus,
+            OrderPaymentStatus paymentStatus,
             string? notes,
             Guid? courierId,
             decimal shippingFee = 0,
@@ -31,7 +31,7 @@ namespace Pos.Web.Features.Orders.Entities
             CustomerId = customerId;
             OrderDate = DateTime.UtcNow;
             Status = OrderStatus.Pending;
-            PaymentStatus = paymentStatus;
+            OrderPaymentStatus = paymentStatus;
             DeliveryAddress = deliveryAddress;
             DeliveryCity = deliveryCity;
             DeliveryPostalCode = deliveryPostalCode;
@@ -52,7 +52,7 @@ namespace Pos.Web.Features.Orders.Entities
         public Customer? Customer { get; private set; }
         public DateTime OrderDate { get; private set; }
         public OrderStatus Status { get; private set; }
-        public PaymentStatus PaymentStatus { get; private set; }
+        public OrderPaymentStatus OrderPaymentStatus { get; private set; }
 
         // -- Finacials --
         public decimal SubTotal { get; private set; }
@@ -94,7 +94,7 @@ namespace Pos.Web.Features.Orders.Entities
             string? deliveryRegion,
             string? deliveryCountry,
             string? deliveryPostalCode,
-            PaymentStatus paymentStatus,
+            OrderPaymentStatus paymentStatus,
             string? notes,
             Guid? courierId,
             decimal shippingFee = 0,
@@ -259,22 +259,70 @@ namespace Pos.Web.Features.Orders.Entities
             return payment;
         }
 
+        public Result<OrderPayment> AddRefund(decimal amountToRefund, DateTime payementDate, PaymentMethod paymentMethod, string reason, string? transactionId)
+        {
+            if (amountToRefund <= 0)
+                return Result.Failure<OrderPayment>(Error.Validation("Refund.InvalidAmount", "Refund amount must be positive."));
+
+            if(amountToRefund > AmountPaid)
+                return Result.Failure<OrderPayment>(Error.Validation("Refund.Excessive", "Cannot refund more than was paid."));
+
+            var refund = new OrderPayment(
+                Id,
+                -amountToRefund,
+                payementDate,
+                paymentMethod,
+                transactionId,
+                notes: $"Refund: {reason}");
+
+            _payments.Add(refund);
+
+            RecalculatePaymentStatus();
+
+            return Result.Success(refund);
+        }
+
+        public Result<OrderPayment> VoidPayment(Guid paymentId)
+        {
+            var payment = _payments.FirstOrDefault(p => p.Id == paymentId);
+
+            if (payment is null)
+                return Result.Failure<OrderPayment>(Error.NotFound("Payment.NotFound", "Payment not found."));
+
+            if (payment.Status != Entities.PaymentStatus.Pending && payment.Provider != "System")
+                return Result.Failure<OrderPayment>(Error.Validation("Payment.CannotVoid", "Only pending online payments and system payments can be voided."));
+
+            payment.Void();
+            RecalculatePaymentStatus();
+            return Result.Success(payment);
+        }
+
         private void RecalculatePaymentStatus()
         {
             AmountPaid = _payments
-                .Where(p => p.IsSuccessful)
+                .Where(p => p.Status == Entities.PaymentStatus.Completed)
                 .Sum(p => p.Amount);
 
             AmountDue = TotalAmount - AmountPaid;
 
-            if (AmountPaid == 0)
-                PaymentStatus = PaymentStatus.Unpaid;
-
-            else if(AmountPaid >= TotalAmount)
-                PaymentStatus = PaymentStatus.Paid;
-
+            if (AmountPaid >= TotalAmount)
+            {
+                OrderPaymentStatus = AmountPaid > TotalAmount
+                    ? OrderPaymentStatus.Overpaid
+                    : OrderPaymentStatus.Paid;
+            }
+            else if(AmountPaid > 0)
+            {
+                OrderPaymentStatus = OrderPaymentStatus.Partial;
+            }
             else
-                PaymentStatus = PaymentStatus.Partial;
+            {
+                bool hasRefunds = _payments.Any(p => p.Status == Entities.PaymentStatus.Completed && p.Amount < 0);
+
+                OrderPaymentStatus = hasRefunds
+                    ? OrderPaymentStatus.Refunded
+                    : OrderPaymentStatus.Unpaid;
+            }
         }
 
         public Result UpdateDeliveryInfo(

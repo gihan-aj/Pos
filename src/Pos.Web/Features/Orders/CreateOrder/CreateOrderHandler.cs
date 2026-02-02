@@ -41,7 +41,7 @@ namespace Pos.Web.Features.Orders.CreateOrder
                 command.DeliveryRegion,
                 command.DeliveryCountry,
                 command.DeliveryPostalCode,
-                PaymentStatus.Unpaid, // TODO : Derive from payments
+                OrderPaymentStatus.Unpaid, // TODO : Derive from payments
                 command.Notes,
                 courierId,
                 command.ShippingFee,

@@ -28,7 +28,7 @@ namespace Pos.Web.Features.Orders.GetOrderList
                 query = query.Where(o => o.Status == request.Status.Value);
 
             if (request.PaymentStatus.HasValue)
-                query = query.Where(o => o.PaymentStatus == request.PaymentStatus.Value);
+                query = query.Where(o => o.OrderPaymentStatus == request.PaymentStatus.Value);
 
             if (request.StartDate.HasValue)
                 query = query.Where(o => o.OrderDate >= request.StartDate.Value);
@@ -84,7 +84,7 @@ namespace Pos.Web.Features.Orders.GetOrderList
                 o.Customer!.Name,
                 o.OrderDate,
                 o.Status,
-                o.PaymentStatus,
+                o.OrderPaymentStatus,
                 o.TotalAmount,
                 o.OrderItems.Sum(oi => oi.Quantity), // EF Core translates this to a subquery count
                 o.PaymentMethod,

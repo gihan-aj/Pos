@@ -8,7 +8,7 @@ namespace Pos.Web.Features.Orders.GetOrderList
         string CustomerName,
         DateTime OrderDate,
         OrderStatus Status,
-        PaymentStatus PaymentStatus,
+        OrderPaymentStatus PaymentStatus,
         decimal TotalAmount,
         int ItemCount,
         string? PaymentMethod,

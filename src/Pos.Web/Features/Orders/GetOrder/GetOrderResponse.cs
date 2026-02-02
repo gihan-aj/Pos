@@ -9,7 +9,7 @@ namespace Pos.Web.Features.Orders.GetOrder
         CustomerDto? Customer,
         DateTime OrderDate,
         OrderStatus Status,
-        PaymentStatus PaymentStatus,
+        OrderPaymentStatus PaymentStatus,
         // Financials
         decimal SubTotal,
         decimal DiscountAmount,

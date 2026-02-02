@@ -47,7 +47,7 @@ namespace Pos.Web.Features.Orders.GetOrder
                 : null,
                 order.OrderDate,
                 order.Status,
-                order.PaymentStatus,
+                order.OrderPaymentStatus,
                 order.SubTotal,
                 order.DiscountAmount,
                 order.TaxAmount,
@@ -80,10 +80,10 @@ namespace Pos.Web.Features.Orders.GetOrder
                 .Select(p => new OrderPaymentDto(
                     p.Id,
                     p.PaymentDate,
-                    p.PaymentMethod,
+                    p.Method,
                     p.Amount,
                     p.TransactionId,
-                    p.IsSuccessful
+                    p.Status
                 )).ToList()
             );
 

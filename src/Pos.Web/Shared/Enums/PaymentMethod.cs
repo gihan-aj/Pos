@@ -8,6 +8,8 @@
         MobilePayment = 4,
         BankTransfer = 5,
         GiftCard = 6,
+        Online = 7,
+        Refunded = 8,
         Other = 99
     }
 }

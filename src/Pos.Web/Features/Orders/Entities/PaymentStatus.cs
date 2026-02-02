@@ -2,10 +2,10 @@
 {
     public enum PaymentStatus
     {
-        Unpaid = 1,
-        Partial = 2,
-        Paid = 3,
-        Refunded = 4,
-        Failed = 5,
+        Pending = 1,    // Online payment initiated, waiting for webhook
+        Completed = 2,  // Money successfully captured (Cash or Online success)
+        Failed = 3,     // Card declined
+        Voided = 4,     // Cashier mistake, transaction ignored
+        Refunded = 5    // Specific status for refund records
     }
 }

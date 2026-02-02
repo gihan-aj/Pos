@@ -15,7 +15,7 @@ namespace Pos.Web.Features.Orders.Entities
                 .HasPrecision(18, 2)
                 .IsRequired();
 
-            builder.Property(p => p.PaymentMethod)
+            builder.Property(p => p.Method)
                 .IsRequired();
 
             builder.Property(p => p.TransactionId)
