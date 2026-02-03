@@ -130,7 +130,7 @@ namespace Pos.Web.Features.Orders.Entities
         public Result<OrderItem> AddItem(Product product, ProductVariant variant, int quantity, decimal discountPerItem = 0)
         {
             if (Status == OrderStatus.Processing ||
-                Status == OrderStatus.Completed ||
+                Status == OrderStatus.ReadyToShip ||
                 Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
@@ -162,7 +162,7 @@ namespace Pos.Web.Features.Orders.Entities
         public Result ChangeOrdetItemQuantity(Guid orderItemId, int Quantity)
         {
             if (Status == OrderStatus.Processing ||
-                Status == OrderStatus.Completed ||
+                Status == OrderStatus.ReadyToShip ||
                 Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
@@ -182,7 +182,7 @@ namespace Pos.Web.Features.Orders.Entities
         public Result RemoveOrderItem(Guid orderItemId)
         {
             if (Status == OrderStatus.Processing ||
-                Status == OrderStatus.Completed ||
+                Status == OrderStatus.ReadyToShip ||
                 Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
@@ -202,7 +202,7 @@ namespace Pos.Web.Features.Orders.Entities
 
         public Result UpdateFinancialDetails(decimal shippingFee, decimal taxAmount, decimal discountAmount)
         {
-            if (Status == OrderStatus.Completed ||
+            if (Status == OrderStatus.ReadyToShip ||
                 Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
@@ -340,7 +340,7 @@ namespace Pos.Web.Features.Orders.Entities
         {
             if (Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
-                Status == OrderStatus.Completed ||
+                Status == OrderStatus.ReadyToShip ||
                 Status == OrderStatus.Cancelled)
             {
                 return Result.Failure(Error.Validation("Order.CannotUpdate", $"Cannot update delivery details when order status is '{Status}'."));
@@ -406,6 +406,21 @@ namespace Pos.Web.Features.Orders.Entities
                     "Cannot process an empty order."));
 
             Status = OrderStatus.Processing;
+
+            return Result.Success();
+        }
+
+        public Result MarkAsReadyToShip()
+        {
+            if (Status != OrderStatus.Processing)
+                return Result.Failure(Error.Validation(
+                    "Order.InvalidState",
+                    $"Order must be in 'Processing' state to be marked as Ready To Ship. Current state: '{Status}'."));
+
+            if (!_orderItems.Any())
+                return Result.Failure(Error.Validation("Order.NoItems", "Cannot pack an empty order."));
+
+            Status = OrderStatus.ReadyToShip;
 
             return Result.Success();
         }
