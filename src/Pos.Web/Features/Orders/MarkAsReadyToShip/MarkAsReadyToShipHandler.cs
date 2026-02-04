@@ -3,18 +3,18 @@ using Pos.Web.Infrastructure.Persistence;
 using Pos.Web.Shared.Abstractions;
 using Pos.Web.Shared.Errors;
 
-namespace Pos.Web.Features.Orders.CompleteProcess
+namespace Pos.Web.Features.Orders.MarkAsReadyToShip
 {
-    public class CompleteProcessingOrderHandler : ICommandHandler<CompleteProcessingOrderCommand>
+    public class MarkAsReadyToShipHandler : ICommandHandler<MarkAsReadyToShipCommand>
     {
         private readonly AppDbContext _dbContext;
 
-        public CompleteProcessingOrderHandler(AppDbContext dbContext)
+        public MarkAsReadyToShipHandler(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<Result> Handle(CompleteProcessingOrderCommand command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(MarkAsReadyToShipCommand command, CancellationToken cancellationToken)
         {
             var order = await _dbContext.Orders
                 .Include(o => o.OrderItems)

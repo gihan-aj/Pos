@@ -3,26 +3,26 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pos.Web.Shared.Extensions;
 
-namespace Pos.Web.Features.Orders.CompleteProcess
+namespace Pos.Web.Features.Orders.MarkAsDelivered
 {
-    public static class CompleteProcessingOrderEndpoint
+    public static class MarkAsDeliveredEndpoint
     {
-        public static void MapCompleteProcessingOrder(this RouteGroupBuilder group)
+        public static void MapMarkAsDelivered(this RouteGroupBuilder group)
         {
-            group.MapPut("/{id}/ready-to-ship", async (
+            group.MapPut("/{id}/deliver", async (
                 Guid id,
                 ISender mediator,
                 CancellationToken cancellationToken = default) =>
             {
-                var command = new CompleteProcessingOrderCommand(id);
+                var command = new MarkAsDeliveredCommand(id);
 
                 var result = await mediator.Send(command, cancellationToken);
                 return result.IsSuccess
                     ? Results.NoContent()
                     : result.ToProblemDetails();
             })
-            .WithName("MarkOrderReadyToShip")
-            .WithSummary("Marks a processing order as packed and ready for shipping.")
+            .WithName("MarkAsDelivered")
+            .WithSummary("Marks a order as delivered.")
             .Produces(204)
             .ProducesProblem(404)
             .ProducesProblem(400);

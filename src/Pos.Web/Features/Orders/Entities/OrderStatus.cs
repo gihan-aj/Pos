@@ -2,12 +2,12 @@
 {
     public enum OrderStatus
     {
-        Pending = 1,
-        Confirmed = 2,
-        Processing = 3,
-        ReadyToShip = 4,
-        Shipped = 5,
-        Delivered = 6,
-        Cancelled = 0,
+        Pending = 1,           // Just created, not confirmed
+        Confirmed = 2,         // Confirmed, items reserved/in production
+        ReadyToPack = 3,       // All items ready, can pack now
+        Packed = 4,            // Packed, ready for courier
+        Shipped = 5,           // With courier
+        Delivered = 6,         // Customer received
+        Cancelled = 0          // Order cancelled
     }
 }

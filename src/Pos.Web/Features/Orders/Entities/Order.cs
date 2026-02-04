@@ -101,13 +101,13 @@ namespace Pos.Web.Features.Orders.Entities
             decimal taxAmount = 0,
             decimal discountAmount = 0)
         {
-            if(customerId == Guid.Empty)
+            if (customerId == Guid.Empty)
                 return Result.Failure<Order>(Error.Validation("Order.InvalidCustomerId", "Customer ID cannot be empty."));
 
-            if(string.IsNullOrEmpty(orderNumber))
+            if (string.IsNullOrEmpty(orderNumber))
                 return Result.Failure<Order>(Error.Validation("Order.InvalidOrderNumber", "Order number cannot be empty."));
 
-            if(string.IsNullOrEmpty(deliveryAddress))
+            if (string.IsNullOrEmpty(deliveryAddress))
                 return Result.Failure<Order>(Error.Validation("Order.InvalidDeliveryAddress", "Delivery address cannot be empty."));
 
             return new Order(
@@ -129,20 +129,18 @@ namespace Pos.Web.Features.Orders.Entities
         // --- DOMAIN BEHAVIOR ---
         public Result<OrderItem> AddItem(Product product, ProductVariant variant, int quantity, decimal discountPerItem = 0)
         {
-            if (Status == OrderStatus.Processing ||
-                Status == OrderStatus.ReadyToShip ||
-                Status == OrderStatus.Shipped ||
+            if (Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
                 return Result.Failure<OrderItem>(Error.Validation("Order.CannotAddItem", $"Cannot add items when order status is '{Status}'."));
 
-            if(quantity <= 0)
+            if (quantity <= 0)
                 return Result.Failure<OrderItem>(Error.Validation("OrderItem.InvalidQuantity", "Quantity must be greater than zero."));
 
-            if(product.Id != variant.ProductId)
+            if (product.Id != variant.ProductId)
                 return Result.Failure<OrderItem>(Error.Validation("OrderItem.VariantMismatch", "The product variant does not belong to the specified product."));
 
-            var existingItem = _orderItems.FirstOrDefault(i => i.ProductVariantId ==  variant.Id);
+            var existingItem = _orderItems.FirstOrDefault(i => i.ProductVariantId == variant.Id);
             if (existingItem != null)
             {
                 existingItem.IncreaseQuantity(quantity);
@@ -161,9 +159,7 @@ namespace Pos.Web.Features.Orders.Entities
 
         public Result ChangeOrdetItemQuantity(Guid orderItemId, int Quantity)
         {
-            if (Status == OrderStatus.Processing ||
-                Status == OrderStatus.ReadyToShip ||
-                Status == OrderStatus.Shipped ||
+            if (Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
                 return Result.Failure(Error.Validation("Order.CannotUpdateItem", $"Cannot update items when order status is '{Status}'."));
@@ -181,9 +177,7 @@ namespace Pos.Web.Features.Orders.Entities
 
         public Result RemoveOrderItem(Guid orderItemId)
         {
-            if (Status == OrderStatus.Processing ||
-                Status == OrderStatus.ReadyToShip ||
-                Status == OrderStatus.Shipped ||
+            if (Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
                 return Result.Failure(Error.Validation("Order.CannotRemoveItem", $"Cannot remove items when order status is '{Status}'."));
@@ -202,8 +196,7 @@ namespace Pos.Web.Features.Orders.Entities
 
         public Result UpdateFinancialDetails(decimal shippingFee, decimal taxAmount, decimal discountAmount)
         {
-            if (Status == OrderStatus.ReadyToShip ||
-                Status == OrderStatus.Shipped ||
+            if (Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
                 Status == OrderStatus.Cancelled)
                 return Result.Failure(Error.Validation("Order.CannotUpdateFinancials", $"Cannot update financial details when order status is '{Status}'."));
@@ -267,7 +260,7 @@ namespace Pos.Web.Features.Orders.Entities
             if (amountToRefund <= 0)
                 return Result.Failure<OrderPayment>(Error.Validation("Refund.InvalidAmount", "Refund amount must be positive."));
 
-            if(amountToRefund > AmountPaid)
+            if (amountToRefund > AmountPaid)
                 return Result.Failure<OrderPayment>(Error.Validation("Refund.Excessive", "Cannot refund more than was paid."));
 
             var refund = new OrderPayment(
@@ -314,7 +307,7 @@ namespace Pos.Web.Features.Orders.Entities
                     ? OrderPaymentStatus.Overpaid
                     : OrderPaymentStatus.Paid;
             }
-            else if(AmountPaid > 0)
+            else if (AmountPaid > 0)
             {
                 OrderPaymentStatus = OrderPaymentStatus.Partial;
             }
@@ -340,13 +333,12 @@ namespace Pos.Web.Features.Orders.Entities
         {
             if (Status == OrderStatus.Shipped ||
                 Status == OrderStatus.Delivered ||
-                Status == OrderStatus.ReadyToShip ||
                 Status == OrderStatus.Cancelled)
             {
                 return Result.Failure(Error.Validation("Order.CannotUpdate", $"Cannot update delivery details when order status is '{Status}'."));
             }
 
-            if(string.IsNullOrWhiteSpace(deliveryAddress))
+            if (string.IsNullOrWhiteSpace(deliveryAddress))
             {
                 return Result.Failure(Error.Validation("Order.InvalidAddress", "Delivery address cannot be empty."));
             }
@@ -360,22 +352,22 @@ namespace Pos.Web.Features.Orders.Entities
             TrackingNumber = trackingNumber;
             Notes = notes;
 
-            return Result.Success(); 
+            return Result.Success();
         }
 
-        public Result Confirm()
+        public Result Confirm(List<ProductVariant> currentInventory)
         {
             if (Status != OrderStatus.Pending)
                 return Result.Failure(Error.Validation(
-                    "Order.CannotConfirm", 
+                    "Order.CannotConfirm",
                     $"Cannot confirm order when status is '{Status}'."));
 
-            if(!_orderItems.Any())
+            if (!_orderItems.Any())
                 return Result.Failure(Error.Validation(
-                    "Order.NoItems", 
+                    "Order.NoItems",
                     "Cannot confirm an order with no items."));
 
-            if(string.IsNullOrWhiteSpace(DeliveryAddress))
+            if (string.IsNullOrWhiteSpace(DeliveryAddress))
                 return Result.Failure(Error.Validation(
                     "Order.MissingAddress",
                     "Delivery address is required to confirm the order."));
@@ -388,11 +380,31 @@ namespace Pos.Web.Features.Orders.Entities
             }
             */
 
+            foreach (var item in _orderItems)
+            {
+                var variant = currentInventory.FirstOrDefault(v => v.Id == item.ProductVariantId);
+                if (variant is null)
+                    return Result.Failure(Error.NotFound("OrderItem.VariantNotFound", $"Variant for {item.ProductName} not found."));
+
+                if (variant.StockQuantity >= item.Quantity)
+                {
+                    var result = variant.AdjustStock(-item.Quantity);
+                    if (result.IsFailure)
+                        return result;
+                }
+                else
+                {
+                    return Result.Failure(Error.Conflict(
+                        "OrderItem.InsufficientStock",
+                        $"Insufficient stock for {item.ProductName} (Requested: {item.Quantity}, Available: {variant.StockQuantity})."));
+                }
+            }
+
             Status = OrderStatus.Confirmed;
 
             return Result.Success();
         }
-        
+
         public Result StartProcessing()
         {
             if (Status != OrderStatus.Confirmed)
@@ -400,28 +412,60 @@ namespace Pos.Web.Features.Orders.Entities
                     "Order.InvalidState",
                     $"Order must be in 'Confirmed' state to start processing. Current state: '{Status}'."));
 
-            if(!_orderItems.Any())
+            if (!_orderItems.Any())
                 return Result.Failure(Error.Validation(
                     "Order.NoItems",
                     "Cannot process an empty order."));
 
-            Status = OrderStatus.Processing;
+            Status = OrderStatus.Confirmed;
 
             return Result.Success();
         }
 
         public Result MarkAsReadyToShip()
         {
-            if (Status != OrderStatus.Processing)
+            if (Status != OrderStatus.Confirmed)
                 return Result.Failure(Error.Validation(
                     "Order.InvalidState",
-                    $"Order must be in 'Processing' state to be marked as Ready To Ship. Current state: '{Status}'."));
+                    $"Order must be in 'Confirmed' state to be marked as Ready To Ship. Current state: '{Status}'."));
 
             if (!_orderItems.Any())
                 return Result.Failure(Error.Validation("Order.NoItems", "Cannot pack an empty order."));
 
-            Status = OrderStatus.ReadyToShip;
+            if (CourierId is null || CourierId == Guid.Empty)
+                return Result.Failure(Error.Validation(
+                    "Order.MissingCourier",
+                    "Courier must be assigned before marking the order as Ready To Ship."));
 
+            Status = OrderStatus.Packed;
+
+            return Result.Success();
+        }
+
+        public Result MarkAsShipped()
+        {
+            if (Status != OrderStatus.Packed)
+                return Result.Failure(Error.Validation(
+                    "Order.InvalidState",
+                    $"Order must be in 'Packed' state to be marked as Shipped. Current state: '{Status}'."));
+
+            if (string.IsNullOrWhiteSpace(TrackingNumber))
+                return Result.Failure(Error.Validation(
+                    "Order.MissingTrackingNumber",
+                    "Tracking number is required to mark the order as shipped."));
+
+            Status = OrderStatus.Shipped;
+            return Result.Success();
+        }
+
+        public Result MarkAsDelivered()
+        {
+            if (Status != OrderStatus.Shipped)
+                return Result.Failure(Error.Validation(
+                    "Order.InvalidState",
+                    $"Order must be in 'Shipped' state to be marked as Delivered. Current state: '{Status}'."));
+
+            Status = OrderStatus.Delivered;
             return Result.Success();
         }
     }

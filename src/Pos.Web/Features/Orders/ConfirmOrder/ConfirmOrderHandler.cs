@@ -23,7 +23,15 @@ namespace Pos.Web.Features.Orders.ConfirmOrder
             if (order is null)
                 return Result.Failure(Error.NotFound("Order.NotFound", "Order is not found."));
 
-            var result = order.Confirm();
+            var variantIds = order.OrderItems
+                .Select(oi => oi.ProductVariantId)
+                .ToHashSet();
+
+            var currentInventory = await _dbContext.ProductVariants
+                .Where(v => variantIds.Contains(v.Id))
+                .ToListAsync(cancellationToken);
+
+            var result = order.Confirm(currentInventory);
 
             if (result.IsFailure)
             {
