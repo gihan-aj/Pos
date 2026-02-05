@@ -1,6 +1,7 @@
 ﻿using Pos.Web.Features.Orders.AddOrderItem;
 using Pos.Web.Features.Orders.AddPayment;
 using Pos.Web.Features.Orders.AddRefund;
+using Pos.Web.Features.Orders.CancelOrder;
 using Pos.Web.Features.Orders.ChangeOrderItemQuantity;
 using Pos.Web.Features.Orders.ConfirmOrder;
 using Pos.Web.Features.Orders.CreateOrder;
@@ -38,6 +39,7 @@ namespace Pos.Web.Features.Orders
             group.MapMarkAsReadyToShip();
             group.MapMarkAsShipped();
             group.MapMarkAsDelivered();
+            group.MapCancelOrder();
         }
     }
 }

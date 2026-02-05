@@ -13,5 +13,6 @@ namespace Pos.Web.Features.Orders.UpdateOrderDelivery
         public string? DeliveryPostalCode { get; init; }
         public string? TrackingNumber { get; init; }
         public string? Notes { get; init; }
+        public bool IsCashOnDelivery { get; init; }
     }
 }

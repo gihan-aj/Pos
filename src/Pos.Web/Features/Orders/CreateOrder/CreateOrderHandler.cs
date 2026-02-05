@@ -46,7 +46,8 @@ namespace Pos.Web.Features.Orders.CreateOrder
                 courierId,
                 command.ShippingFee,
                 command.TaxAmount,
-                command.DiscountAmount);
+                command.DiscountAmount,
+                command.IsCashOnDelivery);
 
             if (orderResult.IsFailure)
                 return Result.Failure<Guid>(orderResult.Error);

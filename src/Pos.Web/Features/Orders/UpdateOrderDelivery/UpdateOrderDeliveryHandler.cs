@@ -30,7 +30,8 @@ namespace Pos.Web.Features.Orders.UpdateOrderDelivery
                 command.DeliveryCountry,
                 command.DeliveryPostalCode,
                 command.TrackingNumber,
-                command.Notes);
+                command.Notes,
+                command.IsCashOnDelivery);
 
             if (updateResult.IsFailure)
             {
