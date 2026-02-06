@@ -20,6 +20,7 @@ namespace Pos.Web.Features.Orders.GetOrder
         decimal AmountDue,
 
         // Shipping Info
+        bool IsCashOnDelivery,
         string DeliveryAddress,
         string? DeliveryCity,
         string? DeliveryRegion,

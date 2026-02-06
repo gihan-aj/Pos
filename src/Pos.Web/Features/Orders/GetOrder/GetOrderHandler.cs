@@ -55,6 +55,7 @@ namespace Pos.Web.Features.Orders.GetOrder
                 order.TotalAmount,
                 order.AmountPaid,
                 order.AmountDue,
+                order.IsCashOnDelivery,
                 order.DeliveryAddress,
                 order.DeliveryCity,
                 order.DeliveryRegion,
