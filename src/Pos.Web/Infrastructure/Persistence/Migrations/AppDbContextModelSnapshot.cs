@@ -593,6 +593,50 @@ namespace Pos.Web.Infrastructure.Persistence.Migrations
                     b.ToTable("OrderPayments", (string)null);
                 });
 
+            modelBuilder.Entity("Pos.Web.Infrastructure.Persistence.Entities.AppSequence", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("CurrentValue")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Increment")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Prefix")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppSequences");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "Order",
+                            CurrentValue = 1000,
+                            Increment = 1,
+                            Prefix = "ORD-"
+                        },
+                        new
+                        {
+                            Id = "Sku",
+                            CurrentValue = 10000,
+                            Increment = 1,
+                            Prefix = "PROD-"
+                        });
+                });
+
             modelBuilder.Entity("Pos.Web.Features.Catalog.Entities.Category", b =>
                 {
                     b.HasOne("Pos.Web.Features.Catalog.Entities.Category", "ParentCategory")

@@ -8,10 +8,12 @@ namespace Pos.Web.Features.Orders.CreateOrder
     public class CreateOrderHandler : ICommandHandler<CreateOrderCommand, Guid>
     {
         private readonly AppDbContext _dbContext;
+        private readonly IAppSequenceService _appSequenceService;
 
-        public CreateOrderHandler(AppDbContext dbContext)
+        public CreateOrderHandler(AppDbContext dbContext, IAppSequenceService appSequenceService)
         {
             _dbContext = dbContext;
+            _appSequenceService = appSequenceService;
         }
 
         public async Task<Result<Guid>> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
@@ -31,7 +33,8 @@ namespace Pos.Web.Features.Orders.CreateOrder
             }
 
             // Temporary !!!!!
-            var orderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 4).ToUpper()}";
+            //var orderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString().Substring(0, 4).ToUpper()}";
+            var orderNumber = await _appSequenceService.GetNextNumberAsync("Order", cancellationToken);
 
             var orderResult = Order.Create(
                 orderNumber,

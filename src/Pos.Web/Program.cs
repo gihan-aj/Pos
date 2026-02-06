@@ -9,6 +9,8 @@ using Pos.Web.Features.Orders;
 using Pos.Web.Infrastructure;
 using Pos.Web.Infrastructure.Behaviors;
 using Pos.Web.Infrastructure.Persistence;
+using Pos.Web.Infrastructure.Services;
+using Pos.Web.Shared.Abstractions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +24,8 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
     options.UseSqlServer(connectionString);
     options.AddInterceptors(sp.GetRequiredService<AuditingInterceptor>());
 });
+
+builder.Services.AddScoped<IAppSequenceService, AppSequenceService>();
 
 // 1. Add MediatR
 builder.Services.AddMediatR(cfg => {

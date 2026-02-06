@@ -9,10 +9,12 @@ namespace Pos.Web.Features.Catalog.Products.CreateProduct
     public class CreateProductHandler : ICommandHandler<CreateProductCommand, Guid>
     {
         private readonly AppDbContext _dbContext;
+        private readonly IAppSequenceService _appSequenceService;
 
-        public CreateProductHandler(AppDbContext dbContext)
+        public CreateProductHandler(AppDbContext dbContext, IAppSequenceService appSequenceService)
         {
             _dbContext = dbContext;
+            _appSequenceService = appSequenceService;
         }
 
         public async Task<Result<Guid>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
@@ -42,7 +44,8 @@ namespace Pos.Web.Features.Catalog.Products.CreateProduct
             else
             {
                 // Auto-Generate: PROD-1001, PROD-1002, etc.
-                finalSku = await GenerateNextSkuAsync(cancellationToken);
+                //finalSku = await GenerateNextSkuAsync(cancellationToken);
+                finalSku = await _appSequenceService.GetNextNumberAsync("Sku", cancellationToken);
             }
 
             var productResult = Product.Create(
@@ -113,32 +116,7 @@ namespace Pos.Web.Features.Catalog.Products.CreateProduct
             return productResult.Value.Id;
         }
 
-        private async Task<string> GenerateNextSkuAsync(CancellationToken cancellationToken) 
-        {
-            // Strategy: Find the highest existing auto-generated SKU and increment.
-            // Format: "PROD-XXXX"
 
-            // OPTION 1: Sequence Table (Best for concurrency)
-            // OPTION 2: Max Query (Simpler for MVP, potential race condition in high-concurrency)
-
-            // We'll use a safer "Retry" approach or just Max for this scale.
-            // NOTE: In high traffic, use a dedicated DB Sequence or Distributed Counter (Redis).
-
-            var lastSku = await _dbContext.Products
-                .Where(p => p.Sku != null && p.Sku.StartsWith("PROD-"))
-                .OrderByDescending(p => p.Sku) // String sort works for fixed length, but tricky for "PROD-9" vs "PROD-10"
-                .Select(p => p.Sku)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            int nextNumber = 1000; // Start at 1000
-            if(lastSku != null && lastSku.Length > 5)
-            {
-                if(int.TryParse(lastSku.Substring(5), out int lastNumber))
-                    nextNumber = lastNumber + 1;
-            }
-
-            return $"PROD-{nextNumber}";
-        }
 
         private static string GenerateCode(string input, int length)
         {

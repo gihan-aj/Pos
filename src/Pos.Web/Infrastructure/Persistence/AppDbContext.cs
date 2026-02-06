@@ -3,6 +3,7 @@ using Pos.Web.Features.Catalog.Entities;
 using Pos.Web.Features.Couriers.Entities;
 using Pos.Web.Features.Customers;
 using Pos.Web.Features.Orders.Entities;
+using Pos.Web.Infrastructure.Persistence.Entities;
 
 namespace Pos.Web.Infrastructure.Persistence
 {
@@ -21,6 +22,7 @@ namespace Pos.Web.Infrastructure.Persistence
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Courier> Couriers { get; set; }
         public DbSet<OrderPayment> OrderPayments { get; set; }
+        public DbSet<AppSequence> AppSequences { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
