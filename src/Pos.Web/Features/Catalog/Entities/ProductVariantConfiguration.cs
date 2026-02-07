@@ -33,9 +33,6 @@ namespace Pos.Web.Features.Catalog.Entities
                 .WithMany(p => p.Variants)
                 .HasForeignKey(v => v.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Property(v => v.StockQuantity)
-                    .IsRowVersion(); // Timestamp for SQL Server
         }
     }
 }

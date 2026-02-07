@@ -5,6 +5,7 @@ using Pos.Web.Features.Orders.CancelOrder;
 using Pos.Web.Features.Orders.ChangeOrderItemQuantity;
 using Pos.Web.Features.Orders.ConfirmOrder;
 using Pos.Web.Features.Orders.CreateOrder;
+using Pos.Web.Features.Orders.DownloadInvoice;
 using Pos.Web.Features.Orders.GetOrder;
 using Pos.Web.Features.Orders.GetOrderList;
 using Pos.Web.Features.Orders.MarkAsDelivered;
@@ -40,6 +41,7 @@ namespace Pos.Web.Features.Orders
             group.MapMarkAsShipped();
             group.MapMarkAsDelivered();
             group.MapCancelOrder();
+            group.MapDownloadInvoice();
         }
     }
 }

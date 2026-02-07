@@ -12,9 +12,12 @@ using Pos.Web.Infrastructure.Behaviors;
 using Pos.Web.Infrastructure.Persistence;
 using Pos.Web.Infrastructure.Services;
 using Pos.Web.Shared.Abstractions;
+using QuestPDF.Infrastructure;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 // 1. Setup Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -27,6 +30,7 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 });
 
 builder.Services.AddScoped<IAppSequenceService, AppSequenceService>();
+builder.Services.AddScoped<IInvoiceGenerator, QuestPdfInvoiceGenerator>();
 
 // 1. Add MediatR
 builder.Services.AddMediatR(cfg => {
@@ -90,6 +94,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 using (var scope = app.Services.CreateScope())
 {
