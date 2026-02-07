@@ -6,6 +6,7 @@ using Pos.Web.Features.Catalog.Products;
 using Pos.Web.Features.Couriers;
 using Pos.Web.Features.Customers;
 using Pos.Web.Features.Orders;
+using Pos.Web.Features.Settings;
 using Pos.Web.Infrastructure;
 using Pos.Web.Infrastructure.Behaviors;
 using Pos.Web.Infrastructure.Persistence;
@@ -107,5 +108,6 @@ app.MapProductEndpoints();
 app.MapCustomerEndpoints();
 app.MapOrderEndpoints();
 app.MapCourierEndpoints();
+app.MapSettingsEndpoints();
 
 app.Run();
